@@ -147,11 +147,7 @@ export default function VideoPage({ params }: { params: Promise<{ moduleId: stri
   }
 
   return (
-    <main className="min-h-screen bg-background">
-      {/* Background effects */}
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,rgba(207,56,0,0.1),transparent_50%)]" />
-      <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:60px_60px]" />
-
+    <main className="min-h-screen">
       <div className="relative z-10">
         <DashboardHeader />
 

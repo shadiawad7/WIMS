@@ -75,10 +75,7 @@ const modules = [
 
 export default function DashboardPage() {
   return (
-    <main className="min-h-screen gradient-warm-bg">
-      {/* Subtle grid pattern */}
-      <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
-
+    <main className="min-h-screen">
       <div className="relative z-10">
         <DashboardHeader />
 

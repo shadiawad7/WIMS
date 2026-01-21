@@ -190,6 +190,7 @@ const modulesData: Record<
 export default async function ModulePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const moduleData = modulesData[id] || modulesData["methodology"]
+  const isMethodology = id === "methodology" || moduleData.name === "METHODOLOGY"
 
   const continueWatchingVideos = moduleData.videos
     .filter((v) => v.status === "in-progress")
@@ -200,10 +201,7 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
     }))
 
   return (
-    <main className="min-h-screen gradient-warm-bg">
-      {/* Subtle grid pattern */}
-      <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
-
+    <main className="min-h-screen">
       <div className="relative z-10">
         <DashboardHeader />
 
@@ -221,11 +219,22 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-8">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{moduleData.name}</h1>
-              <div className="h-1 w-24 bg-gradient-to-r from-primary to-orange-500 rounded-full mb-4" />
-              <p className="text-white/80">
-                <span className="text-white font-medium">Director:</span> {moduleData.director}
-              </p>
-              <p className="text-sm text-white/60 mt-1">{moduleData.description}</p>
+              <div
+                className={`h-1 ${isMethodology ? "w-[50vw]" : "w-24"} bg-gradient-to-r from-primary to-orange-500 rounded-full mb-4`}
+              />
+              <div className="flex items-start gap-4">
+                <img
+                  src="/soccer-player-fitness-training-gym.jpg"
+                  alt={`Director ${moduleData.director}`}
+                  className="w-24 h-32 object-cover object-top rounded-[20px] border border-white/20"
+                />
+                <div>
+                  <p className="text-white/80 text-2xl">
+                    <span className="text-white font-medium">Director:</span> {moduleData.director}
+                  </p>
+                  <p className="text-sm text-white/60 mt-1">{moduleData.description}</p>
+                </div>
+              </div>
             </div>
 
             {/* Continue watching carousel */}

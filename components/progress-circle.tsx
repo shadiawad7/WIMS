@@ -49,7 +49,7 @@ export function ProgressCircle({ percentage, size = 80, strokeWidth = 6, label }
       </svg>
       <div className="absolute flex flex-col items-center">
         <span className="text-lg font-bold text-foreground">{percentage}%</span>
-        {label && <span className="text-[10px] text-muted-foreground uppercase">{label}</span>}
+        {label && <span className="text-[10px] text-white/90 uppercase">{label}</span>}
       </div>
     </div>
   )

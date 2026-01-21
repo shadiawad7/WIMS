@@ -20,7 +20,7 @@ interface ModuleCardProps {
 export function ModuleCard({ module }: ModuleCardProps) {
   if (module.locked) {
     return (
-      <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden opacity-70 cursor-not-allowed shadow-lg border border-white/15">
+      <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden opacity-70 cursor-not-allowed shadow-lg border border-white/15 transition-transform duration-300 transform-gpu translate-y-0 hover:-translate-y-2 hover:shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
         <div className="relative h-44">
           <img
             src={module.thumbnail}
@@ -65,7 +65,7 @@ export function ModuleCard({ module }: ModuleCardProps) {
 
   return (
     <Link href={`/module/${module.id}`}>
-      <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer group shadow-lg border border-white/15 hover:border-primary/40">
+      <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer group shadow-lg border border-white/15 hover:border-primary/40 transform-gpu hover:-translate-y-2 hover:shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
         <div className="relative h-44 overflow-hidden">
           <img
             src={module.thumbnail}

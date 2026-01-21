@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Clock, TrendingUp, Eye, ThumbsUp } from "lucide-react"
+import { Clock, TrendingUp, Eye, ThumbsUp, Play } from "lucide-react"
 
 type VideoStatus = "completed" | "in-progress" | "start"
 
@@ -55,13 +55,18 @@ export function VideoCard({ video }: VideoCardProps) {
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="rounded-full bg-black/45 border border-white/50 p-4 shadow-[0_18px_40px_rgba(0,0,0,0.5)] backdrop-blur-sm transform-gpu transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-105">
+              <Play className="w-6 h-6 text-white" />
+            </div>
+          </div>
           <div className="absolute top-2 right-2">{getStatusBadge(video.status)}</div>
         </div>
 
         {/* Content */}
-        <div className="p-4 flex-1 flex flex-col">
+        <div className="p-3 flex-1 flex flex-col">
           <div className="mb-3">
-            <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-primary transition-colors line-clamp-2">
+            <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-primary transition-colors line-clamp-2 uppercase">
               {video.title}
             </h3>
             <p className="text-sm text-gray-500">Coach: {video.coach}</p>

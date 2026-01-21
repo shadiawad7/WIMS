@@ -134,9 +134,46 @@
   text-shadow: 0 0 10px rgba(207, 56, 0, 0.4), 0 0 20px rgba(207, 56, 0, 0.2);
 }
 
-/* Warm gradient background - brown to orange */
+/* Warm gradient background - terracotta focus */
 .gradient-warm-bg {
-  background: linear-gradient(135deg, #3d2a1f 0%, #5a3d2b 25%, #7a4f35 50%, #a66b3d 75%, #CF3800 100%);
+  --terracotta-base: #c85a1e;
+  --terracotta-bright: #d86a2a;
+  --terracotta-mid: #9a3f17;
+  --terracotta-deep: #4b1e0c;
+  background:
+    radial-gradient(900px 600px at 18% 12%, rgba(255, 162, 98, 0.35) 0%, rgba(200, 90, 30, 0) 60%),
+    linear-gradient(145deg, var(--terracotta-bright) 0%, var(--terracotta-base) 35%, var(--terracotta-mid) 70%, var(--terracotta-deep) 100%);
+}
+
+/* Subtle dashboard grid overlay */
+.dashboard-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* Soft WIMS watermark layer */
+.dashboard-watermark {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-watermark-text {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: clamp(28px, 5vw, 72px);
+  letter-spacing: 0.45em;
+  line-height: 2.2;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.08);
+  text-align: center;
+  white-space: pre-line;
+  transform: rotate(-10deg);
+  filter: blur(0.2px);
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
 }
 
 /* Glass card for warm dark theme */

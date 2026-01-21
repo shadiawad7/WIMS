@@ -38,8 +38,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`font-sans antialiased`}>
-        {children}
+      <body className="font-sans antialiased relative min-h-screen gradient-warm-bg">
+        <div className="fixed inset-0 dashboard-watermark pointer-events-none">
+          <div className="dashboard-watermark-text">
+            {"WIMS WIMS WIMS WIMS WIMS WIMS\nWIMS WIMS WIMS WIMS WIMS WIMS\nWIMS WIMS WIMS WIMS WIMS WIMS\nWIMS WIMS WIMS WIMS WIMS WIMS"}
+          </div>
+        </div>
+        <div className="relative z-10">{children}</div>
         <Analytics />
       </body>
     </html>

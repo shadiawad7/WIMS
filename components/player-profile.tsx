@@ -34,14 +34,14 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
 
       {/* Profile header */}
       <div className="flex flex-col items-center mb-6">
-        <div className="w-24 h-24 rounded-full overflow-hidden mb-4 ring-2 ring-primary/50 ring-offset-2 ring-offset-background">
+        <div className="w-48 h-64 rounded-[32px] overflow-hidden mb-4 ring-2 ring-primary/50 ring-offset-2 ring-offset-background">
           <img
-            src={player.avatar || "/placeholder.svg?height=96&width=96&query=soccer player portrait"}
+            src={player.avatar || "/placeholder.svg?height=256&width=192&query=soccer player portrait"}
             alt={player.name}
             className="w-full h-full object-cover"
           />
         </div>
-        <h2 className="text-xl font-bold text-foreground">{player.name}</h2>
+        <h2 className="text-xl font-bold text-foreground">CAPS {player.name.toUpperCase()}</h2>
       </div>
 
       {/* Player details */}
@@ -90,6 +90,17 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
         </div>
       </div>
 
+      {/* Clip of the weekend */}
+      <Link href="/dashboard/community" className="mb-6">
+        <div className="glass-card rounded-lg p-4 hover:bg-white/5 transition-colors">
+          <div className="flex items-center gap-2 mb-2">
+            <Trophy className="w-4 h-4 text-primary" />
+            <span className="text-xs uppercase tracking-wider text-muted-foreground">Clip of the Weekend</span>
+          </div>
+          <p className="text-lg font-bold text-foreground glow-text">{player.clipOfWeekend}</p>
+        </div>
+      </Link>
+
       {/* Quick stats */}
       <div className="space-y-3 mb-6">
         <Link
@@ -101,6 +112,17 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
             <span className="text-sm text-foreground">Continue Watching:</span>
           </div>
           <span className="text-sm font-bold text-primary">{player.continueWatching} Videos</span>
+        </Link>
+
+        <Link
+          href="/dashboard/community"
+          className="flex items-center justify-between p-3 glass-card rounded-lg hover:bg-white/5 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <Users className="w-4 h-4 text-primary" />
+            <span className="text-sm text-foreground">Community:</span>
+          </div>
+          <span className="text-sm font-bold text-primary">{player.communityMembers.toLocaleString()} Members</span>
         </Link>
 
         <Link
@@ -124,29 +146,7 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
           </div>
           <span className="text-sm font-bold text-primary">{player.favorites} Videos</span>
         </Link>
-
-        <Link
-          href="/dashboard/community"
-          className="flex items-center justify-between p-3 glass-card rounded-lg hover:bg-white/5 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <Users className="w-4 h-4 text-primary" />
-            <span className="text-sm text-foreground">Community:</span>
-          </div>
-          <span className="text-sm font-bold text-primary">{player.communityMembers.toLocaleString()} Members</span>
-        </Link>
       </div>
-
-      {/* Clip of the weekend */}
-      <Link href="/dashboard/community" className="mt-auto">
-        <div className="glass-card rounded-lg p-4 hover:bg-white/5 transition-colors">
-          <div className="flex items-center gap-2 mb-2">
-            <Trophy className="w-4 h-4 text-primary" />
-            <span className="text-xs uppercase tracking-wider text-muted-foreground">Clip of the Weekend</span>
-          </div>
-          <p className="text-lg font-bold text-foreground glow-text">{player.clipOfWeekend}</p>
-        </div>
-      </Link>
     </div>
   )
 }
