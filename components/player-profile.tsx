@@ -24,7 +24,7 @@ interface PlayerProfileProps {
 
 export function PlayerProfile({ player }: PlayerProfileProps) {
   return (
-    <div className="glass-card rounded-2xl p-6 h-full flex flex-col">
+    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 h-full flex flex-col border border-white/10">
       {/* Settings icon */}
       <div className="flex justify-end mb-4">
         <Link href="/settings" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -33,40 +33,35 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
       </div>
 
       {/* Profile header */}
-      <div className="flex flex-col items-center mb-6">
-        <div className="w-48 h-64 rounded-[32px] overflow-hidden mb-4 ring-2 ring-primary/50 ring-offset-2 ring-offset-background">
+      <div className="flex items-start gap-5 mb-6">
+        <div className="w-44 h-60 rounded-[28px] overflow-hidden ring-2 ring-primary/50 ring-offset-2 ring-offset-background">
           <img
             src={player.avatar || "/placeholder.svg?height=256&width=192&query=soccer player portrait"}
             alt={player.name}
             className="w-full h-full object-cover"
           />
         </div>
-        <h2 className="text-xl font-bold text-foreground">CAPS {player.name.toUpperCase()}</h2>
-      </div>
-
-      {/* Player details */}
-      <div className="space-y-2 text-sm mb-6">
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Birth Year:</span>
-          <span className="text-foreground">{player.birthYear}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Club:</span>
-          <span className="text-foreground">{player.club}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Position:</span>
-          <span className="text-foreground">{player.position}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Nationality:</span>
-          <span className="text-foreground">{player.nationality}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-muted-foreground">Highlights:</span>
-          <Link href={player.highlightsLink} className="text-primary hover:underline flex items-center gap-1">
-            View <ExternalLink className="w-3 h-3" />
-          </Link>
+        <div className="flex-1">
+          <div className="mb-4">
+            <p className="text-sm text-white uppercase tracking-[0.3em]">CAPS</p>
+            <h2 className="text-xl font-bold text-foreground">{player.name.toUpperCase()}</h2>
+          </div>
+          <dl className="grid grid-cols-[minmax(90px,120px)_1fr] gap-x-2 gap-y-3 text-sm items-start">
+            <dt className="text-muted-foreground">Birth Year:</dt>
+            <dd className="text-foreground text-right">{player.birthYear}</dd>
+            <dt className="text-muted-foreground">Club:</dt>
+            <dd className="text-foreground text-right">{player.club}</dd>
+            <dt className="text-muted-foreground">Position:</dt>
+            <dd className="text-foreground text-right">{player.position}</dd>
+            <dt className="text-muted-foreground">Nationality:</dt>
+            <dd className="text-foreground text-right">{player.nationality}</dd>
+            <dt className="text-muted-foreground">Highlights:</dt>
+            <dd className="text-right">
+              <Link href={player.highlightsLink} className="text-primary hover:underline inline-flex items-center gap-1">
+                View <ExternalLink className="w-3 h-3" />
+              </Link>
+            </dd>
+          </dl>
         </div>
       </div>
 

@@ -82,7 +82,7 @@ export default function DashboardPage() {
         <div className="px-4 md:px-8 py-6">
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Left sidebar - Player Profile */}
-            <aside className="w-full lg:w-80 xl:w-96 flex-shrink-0">
+            <aside className="w-full lg:w-96 xl:w-[28rem] flex-shrink-0">
               <PlayerProfile player={playerData} />
             </aside>
 
