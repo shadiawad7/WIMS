@@ -25,19 +25,19 @@ export function VideoCard({ video }: VideoCardProps) {
     switch (status) {
       case "completed":
         return (
-          <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-green-100 text-green-700 rounded-full">
+          <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-emerald-500/20 text-emerald-200 rounded-full border border-emerald-400/30">
             Completed
           </span>
         )
       case "in-progress":
         return (
-          <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-orange-100 text-primary rounded-full">
+          <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-orange-500/20 text-orange-100 rounded-full border border-orange-400/30">
             In Progress
           </span>
         )
       case "start":
         return (
-          <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-gray-100 text-gray-600 rounded-full">
+          <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-white/10 text-white/80 rounded-full border border-white/20">
             Start
           </span>
         )
@@ -46,7 +46,7 @@ export function VideoCard({ video }: VideoCardProps) {
 
   return (
     <Link href={`/video/${video.moduleId}/${video.id}`}>
-      <div className="bg-white rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer group shadow-lg border border-gray-100 hover:shadow-xl hover:border-primary/30 h-full flex flex-col">
+      <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer group shadow-lg border border-white/15 hover:shadow-xl hover:border-primary/40 h-full flex flex-col">
         {/* Thumbnail - square aspect ratio */}
         <div className="relative aspect-video overflow-hidden">
           <img
@@ -66,10 +66,10 @@ export function VideoCard({ video }: VideoCardProps) {
         {/* Content */}
         <div className="p-3 flex-1 flex flex-col">
           <div className="mb-3">
-            <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-primary transition-colors line-clamp-2 uppercase">
+            <h3 className="text-xl font-bold text-white mb-1 group-hover:text-primary transition-colors line-clamp-2 uppercase">
               {video.title}
             </h3>
-            <p className="text-sm text-gray-500">Coach: {video.coach}</p>
+            <p className="text-sm text-white/70">Coach: {video.coach}</p>
           </div>
 
           {/* Stats - 2x2 grid */}
@@ -77,32 +77,32 @@ export function VideoCard({ video }: VideoCardProps) {
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-primary" />
               <div>
-                <p className="text-xs text-gray-400 uppercase">Duration</p>
-                <p className="text-sm font-semibold text-gray-800">{video.duration}</p>
+                <p className="text-xs text-white/50 uppercase">Duration</p>
+                <p className="text-sm font-semibold text-white">{video.duration}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-primary" />
               <div>
-                <p className="text-xs text-gray-400 uppercase">Popularity</p>
-                <p className="text-sm font-semibold text-gray-800">{video.popularity}%</p>
+                <p className="text-xs text-white/50 uppercase">Popularity</p>
+                <p className="text-sm font-semibold text-white">{video.popularity}%</p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               <Eye className="w-4 h-4 text-primary" />
               <div>
-                <p className="text-xs text-gray-400 uppercase">Views</p>
-                <p className="text-sm font-semibold text-gray-800">{video.views.toLocaleString()}</p>
+                <p className="text-xs text-white/50 uppercase">Views</p>
+                <p className="text-sm font-semibold text-white">{video.views.toLocaleString()}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               <ThumbsUp className="w-4 h-4 text-primary" />
               <div>
-                <p className="text-xs text-gray-400 uppercase">Beneficial</p>
-                <p className="text-sm font-semibold text-gray-800">{video.beneficialRatio}%</p>
+                <p className="text-xs text-white/50 uppercase">Beneficial</p>
+                <p className="text-sm font-semibold text-white">{video.beneficialRatio}%</p>
               </div>
             </div>
           </div>

@@ -161,15 +161,27 @@ export default function VideoPage({ params }: { params: Promise<{ moduleId: stri
             <span>Back to Module</span>
           </Link>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
             {/* Main content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Video player */}
-              <VideoPlayer thumbnail={video.thumbnail} title={video.title} onAddHighlight={handleAddHighlight} />
+            <div className="lg:col-span-2 space-y-5">
+              <div className="w-full max-w-[760px] mx-auto space-y-5">
+                {/* Video player */}
+                <VideoPlayer thumbnail={video.thumbnail} title={video.title} onAddHighlight={handleAddHighlight} />
 
+                {/* Timeline highlights */}
+                <TimelineHighlights
+                  highlights={[...video.highlights, ...highlights.filter((h) => h.user === "You")]}
+                  duration={video.durationSeconds}
+                  onSeek={handleSeek}
+                />
+              </div>
+            </div>
+
+            {/* Sidebar */}
+            <div className="space-y-5">
               {/* Video info */}
-              <div className="glass-card rounded-xl p-6">
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
+              <div className="glass-card rounded-xl p-5">
+                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
                   <div>
                     <p className="text-sm text-primary uppercase tracking-wider mb-1">Methodology</p>
                     <h1 className="text-2xl md:text-3xl font-bold text-foreground">{video.title}</h1>
@@ -188,41 +200,39 @@ export default function VideoPage({ params }: { params: Promise<{ moduleId: stri
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  <div className="glass-card rounded-lg p-4 text-center">
-                    <Clock className="w-5 h-5 text-primary mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground uppercase mb-1">Duration</p>
-                    <p className="text-lg font-bold text-foreground">{video.duration}</p>
+                <div className="grid grid-cols-2 gap-x-5 gap-y-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <Clock className="w-5 h-5 text-primary" />
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase mb-1">Duration</p>
+                      <p className="text-base font-semibold text-foreground">{video.duration}</p>
+                    </div>
                   </div>
-                  <div className="glass-card rounded-lg p-4 text-center">
-                    <TrendingUp className="w-5 h-5 text-primary mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground uppercase mb-1">Popularity</p>
-                    <p className="text-lg font-bold text-foreground">{video.popularity}%</p>
+                  <div className="flex items-center gap-3">
+                    <TrendingUp className="w-5 h-5 text-primary" />
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase mb-1">Popularity</p>
+                      <p className="text-base font-semibold text-foreground">{video.popularity}%</p>
+                    </div>
                   </div>
-                  <div className="glass-card rounded-lg p-4 text-center">
-                    <Eye className="w-5 h-5 text-primary mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground uppercase mb-1">Views</p>
-                    <p className="text-lg font-bold text-foreground">{video.views.toLocaleString()}</p>
+                  <div className="flex items-center gap-3">
+                    <Eye className="w-5 h-5 text-primary" />
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase mb-1">Views</p>
+                      <p className="text-base font-semibold text-foreground">{video.views.toLocaleString()}</p>
+                    </div>
                   </div>
-                  <div className="glass-card rounded-lg p-4 text-center">
-                    <ThumbsUp className="w-5 h-5 text-primary mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground uppercase mb-1">Beneficial</p>
-                    <p className="text-lg font-bold text-foreground">{video.beneficialRatio}%</p>
+                  <div className="flex items-center gap-3">
+                    <ThumbsUp className="w-5 h-5 text-primary" />
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase mb-1">Beneficial</p>
+                      <p className="text-base font-semibold text-foreground">{video.beneficialRatio}%</p>
+                    </div>
                   </div>
                 </div>
 
                 <p className="text-muted-foreground leading-relaxed">{video.description}</p>
               </div>
-            </div>
-
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Timeline highlights */}
-              <TimelineHighlights
-                highlights={[...video.highlights, ...highlights.filter((h) => h.user === "You")]}
-                duration={video.durationSeconds}
-                onSeek={handleSeek}
-              />
 
               {/* Beneficial ratio slider */}
               <BeneficialSlider onSubmit={handleBeneficialSubmit} />

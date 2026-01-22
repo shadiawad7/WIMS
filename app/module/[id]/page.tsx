@@ -2,7 +2,7 @@ import { DashboardHeader } from "@/components/dashboard-header"
 import { VideoCard } from "@/components/video-card"
 import { ContinueWatchingCarousel } from "@/components/continue-watching-carousel"
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Play } from "lucide-react"
 
 // Module data - in production this would come from a database
 const modulesData: Record<
@@ -223,11 +223,19 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
                 className={`h-1 ${isMethodology ? "w-[50vw]" : "w-24"} bg-gradient-to-r from-primary to-orange-500 rounded-full mb-4`}
               />
               <div className="flex items-start gap-4">
-                <img
-                  src="/soccer-player-fitness-training-gym.jpg"
-                  alt={`Director ${moduleData.director}`}
-                  className="w-24 h-32 object-cover object-top rounded-[20px] border border-white/20"
-                />
+                <div className="relative w-36 h-24 rounded-[18px] border border-white/20 overflow-hidden">
+                  <img
+                    src="/soccer-player-fitness-training-gym.jpg"
+                    alt={`Director ${moduleData.director}`}
+                    className="w-full h-full object-cover object-top"
+                  />
+                  <div className="absolute inset-0 bg-black/20" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="rounded-full bg-black/50 border border-white/40 p-2 shadow-[0_10px_24px_rgba(0,0,0,0.45)]">
+                      <Play className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                </div>
                 <div>
                   <p className="text-white/80 text-2xl">
                     <span className="text-white font-medium">Director:</span> {moduleData.director}

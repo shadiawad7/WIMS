@@ -43,14 +43,13 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
         </div>
         <div className="flex-1">
           <div className="mb-4">
-            <p className="text-sm text-white uppercase tracking-[0.3em]">CAPS</p>
             <h2 className="text-xl font-bold text-foreground">{player.name.toUpperCase()}</h2>
           </div>
           <dl className="grid grid-cols-[minmax(90px,120px)_1fr] gap-x-2 gap-y-3 text-sm items-start">
             <dt className="text-muted-foreground">Birth Year:</dt>
             <dd className="text-foreground text-right">{player.birthYear}</dd>
             <dt className="text-muted-foreground">Club:</dt>
-            <dd className="text-foreground text-right">{player.club}</dd>
+            <dd className="text-foreground text-right whitespace-nowrap">{player.club}</dd>
             <dt className="text-muted-foreground">Position:</dt>
             <dd className="text-foreground text-right">{player.position}</dd>
             <dt className="text-muted-foreground">Nationality:</dt>

@@ -23,14 +23,14 @@ export function TimelineHighlights({ highlights, duration, onSeek }: TimelineHig
   }
 
   return (
-    <div className="glass-card rounded-xl p-6">
-      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-        <Flag className="w-5 h-5 text-primary" />
+    <div className="glass-card rounded-xl p-4">
+      <h3 className="text-base font-semibold text-foreground mb-3 flex items-center gap-2">
+        <Flag className="w-4 h-4 text-primary" />
         Timeline Highlights
       </h3>
 
       {/* Visual timeline */}
-      <div className="relative h-12 bg-secondary/50 rounded-lg mb-6 overflow-hidden">
+      <div className="relative h-10 bg-secondary/50 rounded-lg mb-4 overflow-hidden">
         <div className="absolute inset-0 flex items-center">
           {/* Timeline bar */}
           <div className="w-full h-2 bg-muted rounded-full mx-4" />
@@ -53,9 +53,9 @@ export function TimelineHighlights({ highlights, duration, onSeek }: TimelineHig
       </div>
 
       {/* Highlight list */}
-      <div className="space-y-3 max-h-64 overflow-y-auto">
+      <div className="space-y-2 max-h-56 overflow-y-auto">
         {highlights.length === 0 ? (
-          <p className="text-muted-foreground text-sm text-center py-4">
+          <p className="text-muted-foreground text-xs text-center py-3">
             No highlights yet. Click the flag icon while watching to add one!
           </p>
         ) : (
@@ -63,16 +63,16 @@ export function TimelineHighlights({ highlights, duration, onSeek }: TimelineHig
             <button
               key={highlight.id}
               onClick={() => onSeek(highlight.time)}
-              className="w-full flex items-center gap-4 p-3 glass-card rounded-lg hover:bg-white/5 transition-colors text-left"
+              className="w-full flex items-center gap-3 p-2.5 glass-card rounded-lg hover:bg-white/5 transition-colors text-left"
             >
-              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                <Clock className="w-4 h-4 text-primary" />
+              <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                <Clock className="w-3.5 h-3.5 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-foreground">{formatTime(highlight.time)}</p>
-                <p className="text-xs text-muted-foreground truncate">Flagged by {highlight.user}</p>
+                <p className="text-[11px] text-muted-foreground truncate">Flagged by {highlight.user}</p>
               </div>
-              <span className="text-xs text-primary">Jump to</span>
+              <span className="text-[11px] text-primary">Jump to</span>
             </button>
           ))
         )}
