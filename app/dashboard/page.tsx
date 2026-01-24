@@ -88,11 +88,13 @@ export default function DashboardPage() {
 
             {/* Right content - Modules */}
             <div className="flex-1">
-              <h2 className="text-lg font-semibold text-white/80 uppercase tracking-wider mb-6">
-                Football Portals Available
-              </h2>
+              <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 inline-flex mb-6 border border-white/10">
+                <h2 className="text-xl font-semibold text-white uppercase tracking-wider">
+                  Football Portals Available
+                </h2>
+              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-5">
                 {modules.map((module) => (
                   <ModuleCard key={module.id} module={module} />
                 ))}

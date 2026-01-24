@@ -29,7 +29,7 @@ const videosData: Record<
 > = {
   methodology: {
     "depth-in-play": {
-      title: "Depth in Play",
+      title: "DEPTH IN PLAY",
       coach: "Ximo",
       duration: "22:05",
       durationSeconds: 22 * 60 + 5,

@@ -29,7 +29,7 @@ export function BeneficialSlider({ onSubmit, initialValue = 50 }: BeneficialSlid
 
   return (
     <div className="glass-card rounded-xl p-4">
-      <h3 className="text-base font-semibold text-foreground mb-3">How beneficial was this video?</h3>
+      <h3 className="text-base font-semibold text-foreground mb-3">HOW BENEFICIAL WAS THIS VIDEO?</h3>
 
       <div className="mb-4">
         <div className="flex justify-between text-xs text-muted-foreground mb-2">
