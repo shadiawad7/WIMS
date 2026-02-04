@@ -27,13 +27,13 @@ const modulesData: Record<
 > = {
   methodology: {
     name: "METHODOLOGY",
-    director: "XIMO",
+    director: "PAU LLÀCER",
     description: "Concepts of Football",
     videos: [
       {
         id: "depth-in-play",
         title: "Depth in Play",
-        coach: "Ximo",
+        coach: "PAU LLÀCER",
         duration: "22:05",
         popularity: 78,
         views: 429,
@@ -44,7 +44,7 @@ const modulesData: Record<
       {
         id: "movement-off-ball",
         title: "Movement Off the Ball",
-        coach: "Alvaro",
+        coach: "PAU LLÀCER",
         duration: "22:05",
         popularity: 78,
         views: 429,
@@ -56,7 +56,7 @@ const modulesData: Record<
       {
         id: "numerical-superiority",
         title: "Numerical Superiority",
-        coach: "Jose",
+        coach: "PAU LLÀCER",
         duration: "22:05",
         popularity: 78,
         views: 429,
@@ -67,7 +67,7 @@ const modulesData: Record<
       {
         id: "transitions",
         title: "Transitions",
-        coach: "Ximo",
+        coach: "PAU LLÀCER",
         duration: "22:05",
         popularity: 78,
         views: 429,
@@ -78,7 +78,7 @@ const modulesData: Record<
       {
         id: "microcycle-mesocycle",
         title: "Microcycle / Mesocycle",
-        coach: "Jorge",
+        coach: "PAU LLÀCER",
         duration: "22:05",
         popularity: 78,
         views: 429,
@@ -89,7 +89,7 @@ const modulesData: Record<
       {
         id: "space-orientation",
         title: "Space and Orientation",
-        coach: "Ximo",
+        coach: "PAU LLÀCER",
         duration: "22:05",
         popularity: 78,
         views: 429,
@@ -102,13 +102,13 @@ const modulesData: Record<
   },
   "modern-footy": {
     name: "MODERN FOOTY",
-    director: "NICO",
+    director: "PAU LLÀCER",
     description: "World Class Modern Style",
     videos: [
       {
         id: "tiki-taka",
         title: "Tiki-Taka Fundamentals",
-        coach: "Nico",
+        coach: "PAU LLÀCER",
         duration: "25:30",
         popularity: 85,
         views: 612,
@@ -120,7 +120,7 @@ const modulesData: Record<
       {
         id: "pressing",
         title: "High Press Systems",
-        coach: "Nico",
+        coach: "PAU LLÀCER",
         duration: "20:15",
         popularity: 82,
         views: 534,
@@ -132,13 +132,13 @@ const modulesData: Record<
   },
   positions: {
     name: "POSITIONS",
-    director: "FERMIN",
+    director: "PAU LLÀCER",
     description: "Master Your Position",
     videos: [
       {
         id: "central-midfield",
         title: "Central Midfield Mastery",
-        coach: "Fermin",
+        coach: "PAU LLÀCER",
         duration: "28:45",
         popularity: 90,
         views: 723,
@@ -150,13 +150,13 @@ const modulesData: Record<
   },
   "physical-prep": {
     name: "PHYSICAL PREP",
-    director: "DAVID",
+    director: "PAU LLÀCER",
     description: "Prevent Injuries & Prepare Body",
     videos: [
       {
         id: "warm-up",
         title: "Dynamic Warm-Up Routines",
-        coach: "David",
+        coach: "PAU LLÀCER",
         duration: "15:20",
         popularity: 88,
         views: 892,
@@ -167,7 +167,7 @@ const modulesData: Record<
       {
         id: "mobility-flow",
         title: "Mobility Flow for Footballers",
-        coach: "David",
+        coach: "PAU LLÀCER",
         duration: "18:10",
         popularity: 84,
         views: 641,
@@ -179,7 +179,7 @@ const modulesData: Record<
       {
         id: "core-stability",
         title: "Core Stability and Balance",
-        coach: "David",
+        coach: "PAU LLÀCER",
         duration: "16:45",
         popularity: 81,
         views: 588,
@@ -190,7 +190,7 @@ const modulesData: Record<
       {
         id: "speed-mechanics",
         title: "Acceleration and Sprint Mechanics",
-        coach: "David",
+        coach: "PAU LLÀCER",
         duration: "20:05",
         popularity: 87,
         views: 734,
@@ -201,7 +201,7 @@ const modulesData: Record<
       {
         id: "injury-prevention",
         title: "Injury Prevention Essentials",
-        coach: "David",
+        coach: "PAU LLÀCER",
         duration: "19:30",
         popularity: 89,
         views: 812,
@@ -212,7 +212,7 @@ const modulesData: Record<
       {
         id: "recovery-protocols",
         title: "Recovery Protocols After Matchday",
-        coach: "David",
+        coach: "PAU LLÀCER",
         duration: "17:25",
         popularity: 83,
         views: 603,
@@ -225,13 +225,13 @@ const modulesData: Record<
   },
   "video-analysis": {
     name: "VIDEO ANALYSIS",
-    director: "MIGUEL",
+    director: "PAU LLÀCER",
     description: "Concepts of Football",
     videos: [
       {
         id: "match-analysis",
         title: "Match Analysis Fundamentals",
-        coach: "Miguel",
+        coach: "PAU LLÀCER",
         duration: "32:10",
         popularity: 75,
         views: 445,

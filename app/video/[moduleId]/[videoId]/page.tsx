@@ -30,7 +30,7 @@ const videosData: Record<
   methodology: {
     "depth-in-play": {
       title: "DEPTH IN PLAY",
-      coach: "Ximo",
+      coach: "PAU LLÀCER",
       duration: "22:05",
       durationSeconds: 22 * 60 + 5,
       popularity: 78,
@@ -48,7 +48,7 @@ const videosData: Record<
     },
     "movement-off-ball": {
       title: "Movement Off the Ball",
-      coach: "Alvaro",
+      coach: "PAU LLÀCER",
       duration: "22:05",
       durationSeconds: 22 * 60 + 5,
       popularity: 78,
@@ -63,7 +63,7 @@ const videosData: Record<
     },
     "numerical-superiority": {
       title: "Numerical Superiority",
-      coach: "Jose",
+      coach: "PAU LLÀCER",
       duration: "22:05",
       durationSeconds: 22 * 60 + 5,
       popularity: 78,
@@ -75,7 +75,7 @@ const videosData: Record<
     },
     "space-orientation": {
       title: "Space and Orientation",
-      coach: "Ximo",
+      coach: "PAU LLÀCER",
       duration: "22:05",
       durationSeconds: 22 * 60 + 5,
       popularity: 78,
@@ -87,7 +87,7 @@ const videosData: Record<
     },
     transitions: {
       title: "Transitions",
-      coach: "Ximo",
+      coach: "PAU LLÀCER",
       duration: "22:05",
       durationSeconds: 22 * 60 + 5,
       popularity: 78,
@@ -99,7 +99,7 @@ const videosData: Record<
     },
     "microcycle-mesocycle": {
       title: "Microcycle / Mesocycle",
-      coach: "Jorge",
+      coach: "PAU LLÀCER",
       duration: "22:05",
       durationSeconds: 22 * 60 + 5,
       popularity: 78,
@@ -113,7 +113,7 @@ const videosData: Record<
   "physical-prep": {
     "warm-up": {
       title: "Dynamic Warm-Up Routines",
-      coach: "David",
+      coach: "PAU LLÀCER",
       duration: "15:20",
       durationSeconds: 15 * 60 + 20,
       popularity: 88,
@@ -129,7 +129,7 @@ const videosData: Record<
     },
     "mobility-flow": {
       title: "Mobility Flow for Footballers",
-      coach: "David",
+      coach: "PAU LLÀCER",
       duration: "18:10",
       durationSeconds: 18 * 60 + 10,
       popularity: 84,
@@ -142,7 +142,7 @@ const videosData: Record<
     },
     "core-stability": {
       title: "Core Stability and Balance",
-      coach: "David",
+      coach: "PAU LLÀCER",
       duration: "16:45",
       durationSeconds: 16 * 60 + 45,
       popularity: 81,
@@ -155,7 +155,7 @@ const videosData: Record<
     },
     "speed-mechanics": {
       title: "Acceleration and Sprint Mechanics",
-      coach: "David",
+      coach: "PAU LLÀCER",
       duration: "20:05",
       durationSeconds: 20 * 60 + 5,
       popularity: 87,
@@ -168,7 +168,7 @@ const videosData: Record<
     },
     "injury-prevention": {
       title: "Injury Prevention Essentials",
-      coach: "David",
+      coach: "PAU LLÀCER",
       duration: "19:30",
       durationSeconds: 19 * 60 + 30,
       popularity: 89,
@@ -184,7 +184,7 @@ const videosData: Record<
     },
     "recovery-protocols": {
       title: "Recovery Protocols After Matchday",
-      coach: "David",
+      coach: "PAU LLÀCER",
       duration: "17:25",
       durationSeconds: 17 * 60 + 25,
       popularity: 83,
