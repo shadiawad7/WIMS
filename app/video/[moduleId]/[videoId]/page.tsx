@@ -110,6 +110,92 @@ const videosData: Record<
       highlights: [],
     },
   },
+  "physical-prep": {
+    "warm-up": {
+      title: "Dynamic Warm-Up Routines",
+      coach: "David",
+      duration: "15:20",
+      durationSeconds: 15 * 60 + 20,
+      popularity: 88,
+      views: 892,
+      beneficialRatio: 96,
+      thumbnail: "/football-warm-up-exercises.jpg",
+      description:
+        "Build a complete pre-session warm-up focused on activation, movement quality, and injury-risk reduction.",
+      highlights: [
+        { id: "1", time: 120, user: "Mateo L." },
+        { id: "2", time: 430, user: "Lucas R." },
+      ],
+    },
+    "mobility-flow": {
+      title: "Mobility Flow for Footballers",
+      coach: "David",
+      duration: "18:10",
+      durationSeconds: 18 * 60 + 10,
+      popularity: 84,
+      views: 641,
+      beneficialRatio: 93,
+      thumbnail: "/soccer-player-fitness-training-gym.jpg",
+      description:
+        "Improve hip, ankle, and thoracic mobility to move efficiently and perform technical actions with less strain.",
+      highlights: [{ id: "1", time: 360, user: "Sergio M." }],
+    },
+    "core-stability": {
+      title: "Core Stability and Balance",
+      coach: "David",
+      duration: "16:45",
+      durationSeconds: 16 * 60 + 45,
+      popularity: 81,
+      views: 588,
+      beneficialRatio: 91,
+      thumbnail: "/training-periodization-football.jpg",
+      description:
+        "Train anti-rotation, trunk control, and balance to stay stable in duels, turns, and directional changes.",
+      highlights: [],
+    },
+    "speed-mechanics": {
+      title: "Acceleration and Sprint Mechanics",
+      coach: "David",
+      duration: "20:05",
+      durationSeconds: 20 * 60 + 5,
+      popularity: 87,
+      views: 734,
+      beneficialRatio: 94,
+      thumbnail: "/football-transitions-attack-defense.jpg",
+      description:
+        "Learn sprint posture, first-step mechanics, and force application for faster acceleration in match situations.",
+      highlights: [{ id: "1", time: 500, user: "Nicolas V." }],
+    },
+    "injury-prevention": {
+      title: "Injury Prevention Essentials",
+      coach: "David",
+      duration: "19:30",
+      durationSeconds: 19 * 60 + 30,
+      popularity: 89,
+      views: 812,
+      beneficialRatio: 95,
+      thumbnail: "/off-ball-movement-soccer-training.jpg",
+      description:
+        "Apply practical screening and strengthening routines to reduce common football injuries through the season.",
+      highlights: [
+        { id: "1", time: 260, user: "Adrian C." },
+        { id: "2", time: 840, user: "Jorge N." },
+      ],
+    },
+    "recovery-protocols": {
+      title: "Recovery Protocols After Matchday",
+      coach: "David",
+      duration: "17:25",
+      durationSeconds: 17 * 60 + 25,
+      popularity: 83,
+      views: 603,
+      beneficialRatio: 92,
+      thumbnail: "/spatial-awareness-soccer-field.jpg",
+      description:
+        "Structure post-match recovery with loading control, nutrition basics, and low-impact regeneration sessions.",
+      highlights: [],
+    },
+  },
 }
 
 export default function VideoPage({ params }: { params: Promise<{ moduleId: string; videoId: string }> }) {
