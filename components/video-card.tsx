@@ -16,6 +16,7 @@ interface VideoCardProps {
     beneficialRatio: number
     status: VideoStatus
     thumbnail: string
+    previewVideo?: string
     moduleId: string
   }
 }
@@ -49,11 +50,21 @@ export function VideoCard({ video }: VideoCardProps) {
       <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer group shadow-lg border border-white/15 hover:shadow-xl hover:border-primary/40 h-full flex flex-col">
         {/* Thumbnail - square aspect ratio */}
         <div className="relative aspect-video overflow-hidden">
-          <img
-            src={video.thumbnail || "/placeholder.svg"}
-            alt={video.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-          />
+          {video.previewVideo ? (
+            <video
+              src={video.previewVideo}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+              muted
+              playsInline
+              preload="auto"
+            />
+          ) : (
+            <img
+              src={video.thumbnail || "/placeholder.svg"}
+              alt={video.title}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="rounded-full bg-black/45 border border-white/50 p-4 shadow-[0_18px_40px_rgba(0,0,0,0.5)] backdrop-blur-sm transform-gpu transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-105">

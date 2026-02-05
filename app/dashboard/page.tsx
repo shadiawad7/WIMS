@@ -24,7 +24,7 @@ const modules = [
   {
     id: "methodology",
     name: "METHODOLOGY",
-    director: "PAU LLÀCER",
+    director: "Pau Llacer",
     description: "Concepts of Football",
     completion: 27,
     thumbnail: "/football-tactics-whiteboard-strategy.jpg",
@@ -32,7 +32,7 @@ const modules = [
   {
     id: "modern-footy",
     name: "MODERN FOOTY",
-    director: "PAU LLÀCER",
+    director: "Pau Llacer",
     description: "World Class Modern Style",
     completion: 53,
     thumbnail: "/modern-football-barcelona-style-play.jpg",
@@ -40,7 +40,7 @@ const modules = [
   {
     id: "physical-prep",
     name: "PHYSICAL PREP",
-    director: "PAU LLÀCER",
+    director: "Pau Llacer",
     description: "Prevent Injuries & Prepare Body",
     completion: 92,
     thumbnail: "/soccer-player-fitness-training-gym.jpg",
@@ -48,7 +48,7 @@ const modules = [
   {
     id: "positions",
     name: "POSITIONS",
-    director: "PAU LLÀCER",
+    director: "Pau Llacer",
     description: "Master Your Position",
     completion: 17,
     thumbnail: "/soccer-field-positions-diagram.jpg",
@@ -56,7 +56,7 @@ const modules = [
   {
     id: "video-analysis",
     name: "VIDEO ANALYSIS",
-    director: "PAU LLÀCER",
+    director: "Pau Llacer",
     description: "Concepts of Football",
     completion: 72,
     thumbnail: "/football-video-analysis-screen-tactical.jpg",
@@ -64,7 +64,7 @@ const modules = [
   {
     id: "wims-select",
     name: "WIMS SELECT",
-    director: "PAU LLÀCER",
+    director: "Pau Llacer",
     description: "Exclusive Content",
     completion: 0,
     locked: true,

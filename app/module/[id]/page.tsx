@@ -21,19 +21,20 @@ const modulesData: Record<
       beneficialRatio: number
       status: "completed" | "in-progress" | "start"
       thumbnail: string
+      previewVideo?: string
       progress?: number
     }[]
   }
 > = {
   methodology: {
     name: "METHODOLOGY",
-    director: "PAU LLÀCER",
+    director: "Pau Llacer",
     description: "Concepts of Football",
     videos: [
       {
         id: "depth-in-play",
         title: "Depth in Play",
-        coach: "PAU LLÀCER",
+        coach: "Pau Llacer",
         duration: "22:05",
         popularity: 78,
         views: 429,
@@ -44,7 +45,7 @@ const modulesData: Record<
       {
         id: "movement-off-ball",
         title: "Movement Off the Ball",
-        coach: "PAU LLÀCER",
+        coach: "Pau Llacer",
         duration: "22:05",
         popularity: 78,
         views: 429,
@@ -56,7 +57,7 @@ const modulesData: Record<
       {
         id: "numerical-superiority",
         title: "Numerical Superiority",
-        coach: "PAU LLÀCER",
+        coach: "Pau Llacer",
         duration: "22:05",
         popularity: 78,
         views: 429,
@@ -67,7 +68,7 @@ const modulesData: Record<
       {
         id: "transitions",
         title: "Transitions",
-        coach: "PAU LLÀCER",
+        coach: "Pau Llacer",
         duration: "22:05",
         popularity: 78,
         views: 429,
@@ -78,7 +79,7 @@ const modulesData: Record<
       {
         id: "microcycle-mesocycle",
         title: "Microcycle / Mesocycle",
-        coach: "PAU LLÀCER",
+        coach: "Pau Llacer",
         duration: "22:05",
         popularity: 78,
         views: 429,
@@ -89,7 +90,7 @@ const modulesData: Record<
       {
         id: "space-orientation",
         title: "Space and Orientation",
-        coach: "PAU LLÀCER",
+        coach: "Pau Llacer",
         duration: "22:05",
         popularity: 78,
         views: 429,
@@ -102,13 +103,13 @@ const modulesData: Record<
   },
   "modern-footy": {
     name: "MODERN FOOTY",
-    director: "PAU LLÀCER",
+    director: "Pau Llacer",
     description: "World Class Modern Style",
     videos: [
       {
         id: "tiki-taka",
         title: "Tiki-Taka Fundamentals",
-        coach: "PAU LLÀCER",
+        coach: "Pau Llacer",
         duration: "25:30",
         popularity: 85,
         views: 612,
@@ -120,7 +121,7 @@ const modulesData: Record<
       {
         id: "pressing",
         title: "High Press Systems",
-        coach: "PAU LLÀCER",
+        coach: "Pau Llacer",
         duration: "20:15",
         popularity: 82,
         views: 534,
@@ -132,13 +133,13 @@ const modulesData: Record<
   },
   positions: {
     name: "POSITIONS",
-    director: "PAU LLÀCER",
+    director: "Pau Llacer",
     description: "Master Your Position",
     videos: [
       {
         id: "central-midfield",
         title: "Central Midfield Mastery",
-        coach: "PAU LLÀCER",
+        coach: "Pau Llacer",
         duration: "28:45",
         popularity: 90,
         views: 723,
@@ -150,47 +151,46 @@ const modulesData: Record<
   },
   "physical-prep": {
     name: "PHYSICAL PREP",
-    director: "PAU LLÀCER",
+    director: "Pau Llacer",
     description: "Prevent Injuries & Prepare Body",
     videos: [
       {
-        id: "warm-up",
-        title: "Dynamic Warm-Up Routines",
-        coach: "PAU LLÀCER",
-        duration: "15:20",
+        id: "mobility-flow",
+        title: "Be the Most Dynamic",
+        coach: "Pau Llacer",
+        duration: "4:16",
         popularity: 88,
         views: 892,
         beneficialRatio: 96,
         status: "completed",
-        thumbnail: "/football-warm-up-exercises.jpg",
+        thumbnail: "/Balance.png",
       },
       {
-        id: "mobility-flow",
-        title: "Mobility Flow for Footballers",
-        coach: "PAU LLÀCER",
-        duration: "18:10",
-        popularity: 84,
-        views: 641,
-        beneficialRatio: 93,
-        status: "in-progress",
-        thumbnail: "/soccer-player-fitness-training-gym.jpg",
-        progress: 52,
+        id: "warm-up",
+        title: "Change Of Pace",
+        coach: "Pau Llacer",
+        duration: "4:16",
+        popularity: 88,
+        views: 892,
+        beneficialRatio: 96,
+        status: "completed",
+        thumbnail: "/neymar.png",
       },
       {
         id: "core-stability",
         title: "Core Stability and Balance",
-        coach: "PAU LLÀCER",
+        coach: "Pau Llacer",
         duration: "16:45",
         popularity: 81,
         views: 588,
         beneficialRatio: 91,
         status: "start",
-        thumbnail: "/training-periodization-football.jpg",
+        thumbnail: "/soccer-player-fitness-training-gym.jpg",
       },
       {
         id: "speed-mechanics",
         title: "Acceleration and Sprint Mechanics",
-        coach: "PAU LLÀCER",
+        coach: "Pau Llacer",
         duration: "20:05",
         popularity: 87,
         views: 734,
@@ -201,7 +201,7 @@ const modulesData: Record<
       {
         id: "injury-prevention",
         title: "Injury Prevention Essentials",
-        coach: "PAU LLÀCER",
+        coach: "Pau Llacer",
         duration: "19:30",
         popularity: 89,
         views: 812,
@@ -212,7 +212,7 @@ const modulesData: Record<
       {
         id: "recovery-protocols",
         title: "Recovery Protocols After Matchday",
-        coach: "PAU LLÀCER",
+        coach: "Pau Llacer",
         duration: "17:25",
         popularity: 83,
         views: 603,
@@ -225,13 +225,13 @@ const modulesData: Record<
   },
   "video-analysis": {
     name: "VIDEO ANALYSIS",
-    director: "PAU LLÀCER",
+    director: "Pau Llacer",
     description: "Concepts of Football",
     videos: [
       {
         id: "match-analysis",
         title: "Match Analysis Fundamentals",
-        coach: "PAU LLÀCER",
+        coach: "Pau Llacer",
         duration: "32:10",
         popularity: 75,
         views: 445,
@@ -247,7 +247,6 @@ const modulesData: Record<
 export default async function ModulePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const moduleData = modulesData[id] || modulesData["methodology"]
-  const isMethodology = id === "methodology" || moduleData.name === "METHODOLOGY"
 
   const continueWatchingVideos = moduleData.videos
     .filter((v) => v.status === "in-progress")
@@ -276,11 +275,9 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-8">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{moduleData.name}</h1>
-              <div
-                className={`h-1 ${isMethodology ? "w-[50vw]" : "w-24"} bg-gradient-to-r from-primary to-orange-500 rounded-full mb-4`}
-              />
+              <div className="h-1 w-[50vw] bg-gradient-to-r from-primary to-orange-500 rounded-full mb-4" />
               <div className="flex items-start gap-4">
-                <div className="relative w-56 h-36 md:w-64 md:h-40 rounded-[18px] border border-white/20 overflow-hidden">
+                <div className="relative w-56 md:w-64 aspect-video rounded-[18px] border border-white/20 overflow-hidden">
                   <video
                     src="/Pau_Llacer.mov"
                     className="w-full h-full object-cover"
@@ -291,7 +288,7 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
                 </div>
                 <div>
                   <p className="text-white/80 text-2xl">
-                    <span className="text-white font-medium">Director:</span> {moduleData.director}
+                    <span className="text-white font-bold">DIRECTOR:</span> {moduleData.director}
                   </p>
                   <p className="text-sm text-white/60 mt-1">{moduleData.description}</p>
                 </div>

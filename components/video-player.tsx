@@ -8,18 +8,45 @@ import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, Flag } 
 interface VideoPlayerProps {
   thumbnail: string
   title: string
+  videoSrc?: string
+  durationSeconds?: number
   onAddHighlight?: (time: number) => void
 }
 
-export function VideoPlayer({ thumbnail, title, onAddHighlight }: VideoPlayerProps) {
+const isYouTubeUrl = (url?: string) => Boolean(url && /(youtube\.com|youtu\.be)/i.test(url))
+
+const getYouTubeEmbedUrl = (url: string) => {
+  try {
+    const parsed = new URL(url)
+    let videoId = parsed.searchParams.get("v")
+
+    if (!videoId && parsed.hostname.includes("youtu.be")) {
+      videoId = parsed.pathname.replace("/", "")
+    }
+
+    if (!videoId && parsed.pathname.includes("/shorts/")) {
+      videoId = parsed.pathname.split("/shorts/")[1]?.split("/")[0] || ""
+    }
+
+    return videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : url
+  } catch {
+    return url
+  }
+}
+
+export function VideoPlayer({ thumbnail, title, videoSrc, durationSeconds, onAddHighlight }: VideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
-  const [duration] = useState(22 * 60 + 5) // 22:05 in seconds
+  const [duration, setDuration] = useState(durationSeconds ?? 22 * 60 + 5)
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(80)
   const progressRef = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const isYouTube = isYouTubeUrl(videoSrc)
+  const youtubeEmbedSrc = videoSrc && isYouTube ? getYouTubeEmbedUrl(videoSrc) : ""
 
   useEffect(() => {
+    if (videoSrc) return
     let interval: NodeJS.Timeout
     if (isPlaying) {
       interval = setInterval(() => {
@@ -33,7 +60,19 @@ export function VideoPlayer({ thumbnail, title, onAddHighlight }: VideoPlayerPro
       }, 1000)
     }
     return () => clearInterval(interval)
-  }, [isPlaying, duration])
+  }, [isPlaying, duration, videoSrc])
+
+  useEffect(() => {
+    const element = videoRef.current
+    if (!element || !videoSrc) return
+    element.muted = isMuted
+  }, [isMuted, videoSrc])
+
+  useEffect(() => {
+    const element = videoRef.current
+    if (!element || !videoSrc) return
+    element.volume = Math.max(0, Math.min(1, volume / 100))
+  }, [volume, videoSrc])
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -46,7 +85,11 @@ export function VideoPlayer({ thumbnail, title, onAddHighlight }: VideoPlayerPro
     const rect = progressRef.current.getBoundingClientRect()
     const x = e.clientX - rect.left
     const percentage = x / rect.width
-    setCurrentTime(Math.floor(percentage * duration))
+    const newTime = Math.floor(percentage * duration)
+    setCurrentTime(newTime)
+    if (videoRef.current && videoSrc) {
+      videoRef.current.currentTime = newTime
+    }
   }
 
   const handleAddHighlight = () => {
@@ -58,13 +101,48 @@ export function VideoPlayer({ thumbnail, title, onAddHighlight }: VideoPlayerPro
   return (
     <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden group">
       {/* Video thumbnail/content */}
-      <img src={thumbnail || "/placeholder.svg"} alt={title} className="w-full h-full object-cover" />
+      {isYouTube ? (
+        <iframe
+          src={youtubeEmbedSrc}
+          title={title}
+          className="w-full h-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+        />
+      ) : videoSrc ? (
+        <video
+          ref={videoRef}
+          src={videoSrc}
+          className="w-full h-full object-cover"
+          playsInline
+          preload="auto"
+          onLoadedMetadata={(e) => {
+            const metadataDuration = e.currentTarget.duration
+            if (Number.isFinite(metadataDuration) && metadataDuration > 0) {
+              setDuration(Math.floor(metadataDuration))
+            }
+          }}
+          onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onEnded={() => setIsPlaying(false)}
+        />
+      ) : (
+        <img src={thumbnail || "/placeholder.svg"} alt={title} className="w-full h-full object-cover" />
+      )}
 
       {/* Play overlay when paused */}
-      {!isPlaying && (
+      {!isYouTube && !isPlaying && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/40">
           <button
-            onClick={() => setIsPlaying(true)}
+            onClick={() => {
+              if (videoRef.current && videoSrc) {
+                void videoRef.current.play()
+              } else {
+                setIsPlaying(true)
+              }
+            }}
             className="w-20 h-20 rounded-full bg-primary/90 flex items-center justify-center hover:bg-primary transition-all hover:scale-110 glow-orange"
           >
             <Play className="w-10 h-10 text-white ml-1" fill="white" />
@@ -73,7 +151,8 @@ export function VideoPlayer({ thumbnail, title, onAddHighlight }: VideoPlayerPro
       )}
 
       {/* Controls overlay */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+      {!isYouTube && (
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity">
         {/* Progress bar */}
         <div
           ref={progressRef}
@@ -92,7 +171,17 @@ export function VideoPlayer({ thumbnail, title, onAddHighlight }: VideoPlayerPro
           <div className="flex items-center gap-4">
             {/* Play/Pause */}
             <button
-              onClick={() => setIsPlaying(!isPlaying)}
+              onClick={() => {
+                if (videoRef.current && videoSrc) {
+                  if (isPlaying) {
+                    videoRef.current.pause()
+                  } else {
+                    void videoRef.current.play()
+                  }
+                } else {
+                  setIsPlaying(!isPlaying)
+                }
+              }}
               className="text-white hover:text-primary transition-colors"
             >
               {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
@@ -100,13 +189,25 @@ export function VideoPlayer({ thumbnail, title, onAddHighlight }: VideoPlayerPro
 
             {/* Skip buttons */}
             <button
-              onClick={() => setCurrentTime(Math.max(0, currentTime - 10))}
+              onClick={() => {
+                const newTime = Math.max(0, currentTime - 10)
+                setCurrentTime(newTime)
+                if (videoRef.current && videoSrc) {
+                  videoRef.current.currentTime = newTime
+                }
+              }}
               className="text-white hover:text-primary transition-colors"
             >
               <SkipBack className="w-5 h-5" />
             </button>
             <button
-              onClick={() => setCurrentTime(Math.min(duration, currentTime + 10))}
+              onClick={() => {
+                const newTime = Math.min(duration, currentTime + 10)
+                setCurrentTime(newTime)
+                if (videoRef.current && videoSrc) {
+                  videoRef.current.currentTime = newTime
+                }
+              }}
               className="text-white hover:text-primary transition-colors"
             >
               <SkipForward className="w-5 h-5" />
@@ -152,7 +253,8 @@ export function VideoPlayer({ thumbnail, title, onAddHighlight }: VideoPlayerPro
             </button>
           </div>
         </div>
-      </div>
+        </div>
+      )}
     </div>
   )
 }

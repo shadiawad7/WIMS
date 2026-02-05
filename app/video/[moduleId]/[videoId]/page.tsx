@@ -8,6 +8,8 @@ import { VideoPlayer } from "@/components/video-player"
 import { TimelineHighlights } from "@/components/timeline-highlights"
 import { BeneficialSlider } from "@/components/beneficial-slider"
 
+const PHYSICAL_PREP_VIDEO_URL = "https://www.youtube.com/watch?app=desktop&v=JUWgJ3pmVfg&feature=youtu.be"
+
 // Video data - in production this would come from a database
 const videosData: Record<
   string,
@@ -22,6 +24,7 @@ const videosData: Record<
       views: number
       beneficialRatio: number
       thumbnail: string
+      videoSrc?: string
       description: string
       highlights: { id: string; time: number; user: string; note?: string }[]
     }
@@ -30,7 +33,7 @@ const videosData: Record<
   methodology: {
     "depth-in-play": {
       title: "DEPTH IN PLAY",
-      coach: "PAU LLÀCER",
+      coach: "Pau Llacer",
       duration: "22:05",
       durationSeconds: 22 * 60 + 5,
       popularity: 78,
@@ -48,7 +51,7 @@ const videosData: Record<
     },
     "movement-off-ball": {
       title: "Movement Off the Ball",
-      coach: "PAU LLÀCER",
+      coach: "Pau Llacer",
       duration: "22:05",
       durationSeconds: 22 * 60 + 5,
       popularity: 78,
@@ -63,7 +66,7 @@ const videosData: Record<
     },
     "numerical-superiority": {
       title: "Numerical Superiority",
-      coach: "PAU LLÀCER",
+      coach: "Pau Llacer",
       duration: "22:05",
       durationSeconds: 22 * 60 + 5,
       popularity: 78,
@@ -75,7 +78,7 @@ const videosData: Record<
     },
     "space-orientation": {
       title: "Space and Orientation",
-      coach: "PAU LLÀCER",
+      coach: "Pau Llacer",
       duration: "22:05",
       durationSeconds: 22 * 60 + 5,
       popularity: 78,
@@ -87,7 +90,7 @@ const videosData: Record<
     },
     transitions: {
       title: "Transitions",
-      coach: "PAU LLÀCER",
+      coach: "Pau Llacer",
       duration: "22:05",
       durationSeconds: 22 * 60 + 5,
       popularity: 78,
@@ -99,7 +102,7 @@ const videosData: Record<
     },
     "microcycle-mesocycle": {
       title: "Microcycle / Mesocycle",
-      coach: "PAU LLÀCER",
+      coach: "Pau Llacer",
       duration: "22:05",
       durationSeconds: 22 * 60 + 5,
       popularity: 78,
@@ -112,14 +115,15 @@ const videosData: Record<
   },
   "physical-prep": {
     "warm-up": {
-      title: "Dynamic Warm-Up Routines",
-      coach: "PAU LLÀCER",
-      duration: "15:20",
-      durationSeconds: 15 * 60 + 20,
+      title: "Change Of Pace",
+      coach: "Pau Llacer",
+      duration: "4:16",
+      durationSeconds: 4 * 60 + 16,
       popularity: 88,
       views: 892,
       beneficialRatio: 96,
-      thumbnail: "/football-warm-up-exercises.jpg",
+      thumbnail: "/neymar.png",
+      videoSrc: PHYSICAL_PREP_VIDEO_URL,
       description:
         "Build a complete pre-session warm-up focused on activation, movement quality, and injury-risk reduction.",
       highlights: [
@@ -128,34 +132,35 @@ const videosData: Record<
       ],
     },
     "mobility-flow": {
-      title: "Mobility Flow for Footballers",
-      coach: "PAU LLÀCER",
-      duration: "18:10",
-      durationSeconds: 18 * 60 + 10,
-      popularity: 84,
-      views: 641,
-      beneficialRatio: 93,
-      thumbnail: "/soccer-player-fitness-training-gym.jpg",
+      title: "Be the Most Dynamic",
+      coach: "Pau Llacer",
+      duration: "4:16",
+      durationSeconds: 4 * 60 + 16,
+      popularity: 88,
+      views: 892,
+      beneficialRatio: 96,
+      thumbnail: "/Balance.png",
+      videoSrc: PHYSICAL_PREP_VIDEO_URL,
       description:
         "Improve hip, ankle, and thoracic mobility to move efficiently and perform technical actions with less strain.",
       highlights: [{ id: "1", time: 360, user: "Sergio M." }],
     },
     "core-stability": {
       title: "Core Stability and Balance",
-      coach: "PAU LLÀCER",
+      coach: "Pau Llacer",
       duration: "16:45",
       durationSeconds: 16 * 60 + 45,
       popularity: 81,
       views: 588,
       beneficialRatio: 91,
-      thumbnail: "/training-periodization-football.jpg",
+      thumbnail: "/soccer-player-fitness-training-gym.jpg",
       description:
         "Train anti-rotation, trunk control, and balance to stay stable in duels, turns, and directional changes.",
       highlights: [],
     },
     "speed-mechanics": {
       title: "Acceleration and Sprint Mechanics",
-      coach: "PAU LLÀCER",
+      coach: "Pau Llacer",
       duration: "20:05",
       durationSeconds: 20 * 60 + 5,
       popularity: 87,
@@ -168,7 +173,7 @@ const videosData: Record<
     },
     "injury-prevention": {
       title: "Injury Prevention Essentials",
-      coach: "PAU LLÀCER",
+      coach: "Pau Llacer",
       duration: "19:30",
       durationSeconds: 19 * 60 + 30,
       popularity: 89,
@@ -184,7 +189,7 @@ const videosData: Record<
     },
     "recovery-protocols": {
       title: "Recovery Protocols After Matchday",
-      coach: "PAU LLÀCER",
+      coach: "Pau Llacer",
       duration: "17:25",
       durationSeconds: 17 * 60 + 25,
       popularity: 83,
@@ -252,7 +257,13 @@ export default function VideoPage({ params }: { params: Promise<{ moduleId: stri
             <div className="lg:col-span-2 space-y-5">
               <div className="w-full max-w-[760px] mx-auto space-y-5">
                 {/* Video player */}
-                <VideoPlayer thumbnail={video.thumbnail} title={video.title} onAddHighlight={handleAddHighlight} />
+                <VideoPlayer
+                  thumbnail={video.thumbnail}
+                  title={video.title}
+                  videoSrc={video.videoSrc}
+                  durationSeconds={video.durationSeconds}
+                  onAddHighlight={handleAddHighlight}
+                />
 
                 {/* Timeline highlights */}
                 <TimelineHighlights
