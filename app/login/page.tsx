@@ -1,11 +1,9 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import { useState, type FormEvent } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Eye, EyeOff, ArrowLeft } from "lucide-react"
+import { ArrowLeft, Eye, EyeOff } from "lucide-react"
 import { Logo } from "@/components/logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,25 +11,52 @@ import { Label } from "@/components/ui/label"
 
 export default function LoginPage() {
   const router = useRouter()
+  const [name, setName] = useState("")
+  const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    // Simulate login - in production, connect to real auth
-    setTimeout(() => {
+    setError("")
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          password,
+        }),
+      })
+
+      const data = (await response.json()) as {
+        error?: string
+        player?: { id: number; name: string }
+      }
+
+      if (!response.ok || !data.player) {
+        setError(data.error ?? "Invalid credentials")
+        return
+      }
+
+      localStorage.setItem("playerId", String(data.player.id))
+      localStorage.setItem("playerName", data.player.name)
       router.push("/dashboard")
-    }, 1000)
+    } catch {
+      setError("Network error. Try again.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
     <main className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center">
-      {/* Background effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(207,56,0,0.15),transparent_50%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100px_100px]" />
 
-      {/* Back button */}
       <Link
         href="/"
         className="absolute top-6 left-6 z-20 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
@@ -40,7 +65,6 @@ export default function LoginPage() {
         <span className="text-sm">Back</span>
       </Link>
 
-      {/* Header links */}
       <div className="absolute top-6 right-6 z-20">
         <Link
           href="https://www.wims.es"
@@ -52,26 +76,28 @@ export default function LoginPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-md px-6">
-        {/* Logo */}
         <div className="mb-12 scale-75">
           <Logo />
         </div>
 
-        {/* Login Form */}
         <div className="glass-card rounded-2xl p-8">
           <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Welcome Back</h2>
-          <p className="text-muted-foreground text-center mb-8">Sign in to access your training</p>
+          <p className="text-muted-foreground text-center mb-8">
+            Sign in with your registered player profile
+          </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-foreground">
-                Email
+              <Label htmlFor="name" className="text-foreground">
+                Player Name
               </Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="player@example.com"
+                id="name"
+                type="text"
+                placeholder="Nicholas Costa"
                 required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="bg-secondary/50 border-border focus:border-primary h-12"
               />
             </div>
@@ -84,13 +110,15 @@ export default function LoginPage() {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
+                  placeholder="Enter your password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="bg-secondary/50 border-border focus:border-primary h-12 pr-12"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowPassword((value) => !value)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -98,11 +126,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="flex justify-end">
-              <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-                Forgot password?
-              </Link>
-            </div>
+            {error ? <p className="text-sm text-red-400">{error}</p> : null}
 
             <Button
               type="submit"
@@ -115,9 +139,9 @@ export default function LoginPage() {
 
           <div className="mt-8 text-center">
             <p className="text-muted-foreground">
-              {"Don't have an account? "}
+              Not registered yet?{" "}
               <Link href="/signup" className="text-primary hover:underline font-medium">
-                Subscribe Now
+                Create profile
               </Link>
             </p>
           </div>

@@ -1,23 +1,24 @@
 import { DashboardHeader } from "@/components/dashboard-header"
 import { PlayerProfile } from "@/components/player-profile"
 import { ModuleCard } from "@/components/module-card"
+import { query } from "@/lib/db"
+import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
 
-// Sample data - in production this would come from a database
-const playerData = {
-  name: "Nicholas Costa",
-  birthYear: 2012,
-  club: "FC Westchester",
-  position: "Center Mid",
-  nationality: "USA & Brasil",
-  highlightsLink: "#",
-  statement: "I will prove myself to the world",
-  avatar: "/young-soccer-player-portrait.png",
-  progress: 72.7,
-  continueWatching: 3,
-  posts: 40,
-  favorites: 7,
-  communityMembers: 1740,
-  clipOfWeekend: "GARRISON",
+type PlayerRow = {
+  id: number
+  name: string
+  birth_year: number | null
+  club: string | null
+  position: string | null
+  nationality: string | null
+  highlights: number | null
+  photo: string | null
+  statement: string | null
+  watching: number | null
+  community: number | null
+  your_posts: number | null
+  favorites: number | null
 }
 
 const modules = [
@@ -73,7 +74,59 @@ const modules = [
   },
 ]
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const cookieStore = await cookies()
+  const sessionId = Number(cookieStore.get("player_session")?.value)
+
+  if (!Number.isInteger(sessionId) || sessionId <= 0) {
+    redirect("/login")
+  }
+
+  const { rows } = await query<PlayerRow>(
+    `
+    SELECT
+      id,
+      name,
+      birth_year,
+      club,
+      position,
+      nationality,
+      highlights,
+      photo,
+      statement,
+      watching,
+      community,
+      your_posts,
+      favorites
+    FROM players
+    WHERE id = $1
+    LIMIT 1
+    `,
+    [sessionId],
+  )
+
+  const player = rows[0]
+  if (!player) {
+    redirect("/login")
+  }
+
+  const playerData = {
+    name: player.name,
+    birthYear: player.birth_year,
+    club: player.club || "N/A",
+    position: player.position || "N/A",
+    nationality: player.nationality || "N/A",
+    highlights: player.highlights ?? 0,
+    statement: player.statement || "No statement yet",
+    avatar: player.photo || "/young-soccer-player-portrait.png",
+    progress: 0,
+    continueWatching: player.watching ?? 0,
+    posts: player.your_posts ?? 0,
+    favorites: player.favorites ?? 0,
+    communityMembers: player.community ?? 0,
+    clipOfWeekend: "COMING SOON",
+  }
+
   return (
     <main className="min-h-screen">
       <div className="relative z-10">

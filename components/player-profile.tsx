@@ -1,16 +1,16 @@
 "use client"
 
-import { Settings, ExternalLink, Play, Video, Heart, Users, Trophy } from "lucide-react"
+import { Settings, Play, Video, Heart, Users, Trophy } from "lucide-react"
 import Link from "next/link"
 
 interface PlayerProfileProps {
   player: {
     name: string
-    birthYear: number
+    birthYear: number | null
     club: string
     position: string
     nationality: string
-    highlightsLink: string
+    highlights: number
     statement: string
     avatar: string
     progress: number
@@ -48,7 +48,7 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
             </div>
             <dl className="grid grid-cols-[minmax(90px,120px)_1fr] gap-x-2 gap-y-2 text-sm items-start">
               <dt className="text-muted-foreground">Birth Year:</dt>
-              <dd className="text-foreground text-right">{player.birthYear}</dd>
+              <dd className="text-foreground text-right">{player.birthYear ?? "N/A"}</dd>
               <dt className="text-muted-foreground">Club:</dt>
               <dd className="text-foreground text-right whitespace-nowrap">{player.club}</dd>
               <dt className="text-muted-foreground">Position:</dt>
@@ -56,11 +56,7 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
               <dt className="text-muted-foreground">Nationality:</dt>
               <dd className="text-foreground text-right">{player.nationality}</dd>
               <dt className="text-muted-foreground">Highlights:</dt>
-              <dd className="text-right">
-                <Link href={player.highlightsLink} className="text-primary hover:underline inline-flex items-center gap-1">
-                  View <ExternalLink className="w-3 h-3" />
-                </Link>
-              </dd>
+              <dd className="text-foreground text-right">{player.highlights}</dd>
             </dl>
           </div>
         </div>
