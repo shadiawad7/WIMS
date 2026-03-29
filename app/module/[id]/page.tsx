@@ -2,20 +2,35 @@ import { DashboardHeader } from "@/components/dashboard-header"
 import { VideoCard } from "@/components/video-card"
 import { ContinueWatchingCarousel } from "@/components/continue-watching-carousel"
 import { AddVideoUrlForm } from "@/components/add-video-url-form"
-import { getModuleMeta, getModuleVideos } from "@/lib/module-videos"
+import { getSessionFromCookies } from "@/lib/auth"
+import { getModuleMeta } from "@/lib/module-metadata"
+import { getModuleVideos } from "@/lib/module-videos"
+import { getPassedVideoIdsForUser } from "@/lib/video-quiz"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
 
 export default async function ModulePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const moduleData = getModuleMeta(id)
+  const session = getSessionFromCookies(await cookies())
+  const moduleData = await getModuleMeta(id)
 
   if (!moduleData) {
     notFound()
   }
 
-  const videos = await getModuleVideos(id)
+  const baseVideos = await getModuleVideos(id)
+  const passedVideoIds =
+    session?.role === "player" ? await getPassedVideoIdsForUser(session.id, moduleData.id) : new Set<string>()
+  const videos = baseVideos.map((video) =>
+    passedVideoIds.has(video.id)
+      ? {
+          ...video,
+          status: "completed" as const,
+        }
+      : video,
+  )
 
   const continueWatchingVideos = videos
     .filter((video) => video.status === "in-progress")
@@ -54,7 +69,7 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
                   />
                 </div>
                 <div>
-                  <p className="text-white/80 text-2xl">
+                  <p className="text-white/80 text-2xl whitespace-nowrap overflow-hidden text-ellipsis max-w-full">
                     <span className="text-white font-bold">DIRECTOR:</span> {moduleData.director}
                   </p>
                   <p className="text-sm text-white/60 mt-1">{moduleData.description}</p>
@@ -67,9 +82,11 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
             </div>
           </div>
 
-          <div className="mb-6 max-w-3xl">
-            <AddVideoUrlForm moduleId={moduleData.id} />
-          </div>
+          {session?.role === "admin" ? (
+            <div className="mb-6 max-w-3xl">
+              <AddVideoUrlForm moduleId={moduleData.id} />
+            </div>
+          ) : null}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {videos.map((video) => (

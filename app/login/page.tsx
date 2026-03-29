@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 
 export default function LoginPage() {
   const router = useRouter()
+  const [userType, setUserType] = useState<"admin" | "player">("player")
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -27,6 +28,7 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          userType,
           name,
           password,
         }),
@@ -34,16 +36,17 @@ export default function LoginPage() {
 
       const data = (await response.json()) as {
         error?: string
-        player?: { id: number; name: string }
+        user?: { id: number; name: string; role: "admin" | "player" }
       }
 
-      if (!response.ok || !data.player) {
+      if (!response.ok || !data.user) {
         setError(data.error ?? "Invalid credentials")
         return
       }
 
-      localStorage.setItem("playerId", String(data.player.id))
-      localStorage.setItem("playerName", data.player.name)
+      localStorage.setItem("playerId", String(data.user.id))
+      localStorage.setItem("playerName", data.user.name)
+      localStorage.setItem("playerRole", data.user.role)
       router.push("/dashboard")
     } catch {
       setError("Network error. Try again.")
@@ -83,18 +86,43 @@ export default function LoginPage() {
         <div className="glass-card rounded-2xl p-8">
           <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Welcome Back</h2>
           <p className="text-muted-foreground text-center mb-8">
-            Sign in with your registered player profile
+            Sign in as administrator or player
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setUserType("player")}
+                className={`h-11 rounded-lg border text-sm font-semibold transition-colors ${
+                  userType === "player"
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-secondary/50 text-foreground"
+                }`}
+              >
+                Player
+              </button>
+              <button
+                type="button"
+                onClick={() => setUserType("admin")}
+                className={`h-11 rounded-lg border text-sm font-semibold transition-colors ${
+                  userType === "admin"
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-secondary/50 text-foreground"
+                }`}
+              >
+                Administrator
+              </button>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="name" className="text-foreground">
-                Player Name
+                {userType === "admin" ? "Administrator Name" : "Player Name"}
               </Label>
               <Input
                 id="name"
                 type="text"
-                placeholder="Nicholas Costa"
+                placeholder={userType === "admin" ? "Pau Llacer" : "Nicholas Costa"}
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -133,7 +161,7 @@ export default function LoginPage() {
               disabled={isLoading}
               className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold uppercase tracking-wider"
             >
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? "Signing in..." : `Sign In as ${userType === "admin" ? "Administrator" : "Player"}`}
             </Button>
           </form>
 

@@ -155,6 +155,20 @@
   pointer-events: none;
 }
 
+.gradient-warm-bg::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 22%, rgba(255, 255, 255, 0.05) 46%, rgba(255, 255, 255, 0) 72%),
+    radial-gradient(700px 500px at 16% 18%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 58%),
+    radial-gradient(820px 620px at 88% 72%, rgba(255, 230, 205, 0.08) 0%, rgba(255, 230, 205, 0) 55%);
+  mix-blend-mode: screen;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
 /* Subtle dashboard grid overlay */
 .dashboard-grid {
   background-image:

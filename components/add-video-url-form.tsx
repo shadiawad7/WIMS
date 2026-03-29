@@ -61,7 +61,7 @@ export function AddVideoUrlForm({ moduleId }: AddVideoUrlFormProps) {
           type="url"
           value={url}
           onChange={(event) => setUrl(event.target.value)}
-          placeholder="https://www.youtube.com/watch?v=..."
+          placeholder="https://vimeo.com/123456789"
           className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-primary"
           required
         />

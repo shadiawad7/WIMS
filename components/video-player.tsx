@@ -14,6 +14,7 @@ interface VideoPlayerProps {
 }
 
 const isYouTubeUrl = (url?: string) => Boolean(url && /(youtube\.com|youtu\.be)/i.test(url))
+const isVimeoUrl = (url?: string) => Boolean(url && /vimeo\.com/i.test(url))
 
 const getYouTubeEmbedUrl = (url: string) => {
   try {
@@ -34,6 +35,33 @@ const getYouTubeEmbedUrl = (url: string) => {
   }
 }
 
+const getVimeoEmbedUrl = (url: string) => {
+  try {
+    const parsed = new URL(url)
+    const segments = parsed.pathname.split("/").filter(Boolean)
+    const videoId = [...segments].reverse().find((segment) => /^\d+$/.test(segment)) || ""
+
+    if (!videoId) {
+      return url
+    }
+
+    const embedUrl = new URL(`https://player.vimeo.com/video/${videoId}`)
+    embedUrl.searchParams.set("title", "0")
+    embedUrl.searchParams.set("byline", "0")
+    embedUrl.searchParams.set("portrait", "0")
+    embedUrl.searchParams.set("badge", "0")
+    embedUrl.searchParams.set("vimeo_logo", "0")
+    embedUrl.searchParams.set("cc", "0")
+    embedUrl.searchParams.set("chapters", "0")
+    embedUrl.searchParams.set("transcript", "0")
+    embedUrl.searchParams.set("dnt", "1")
+
+    return embedUrl.toString()
+  } catch {
+    return url
+  }
+}
+
 export function VideoPlayer({ thumbnail, title, videoSrc, durationSeconds, onAddHighlight }: VideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
@@ -43,7 +71,10 @@ export function VideoPlayer({ thumbnail, title, videoSrc, durationSeconds, onAdd
   const progressRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const isYouTube = isYouTubeUrl(videoSrc)
+  const isVimeo = isVimeoUrl(videoSrc)
+  const isEmbeddedVideo = isYouTube || isVimeo
   const youtubeEmbedSrc = videoSrc && isYouTube ? getYouTubeEmbedUrl(videoSrc) : ""
+  const vimeoEmbedSrc = videoSrc && isVimeo ? getVimeoEmbedUrl(videoSrc) : ""
 
   useEffect(() => {
     if (videoSrc) return
@@ -99,11 +130,14 @@ export function VideoPlayer({ thumbnail, title, videoSrc, durationSeconds, onAdd
   const progress = (currentTime / duration) * 100
 
   return (
-    <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden group">
+    <div
+      className="relative w-full aspect-video bg-black rounded-xl overflow-hidden group"
+      onContextMenu={(event) => event.preventDefault()}
+    >
       {/* Video thumbnail/content */}
-      {isYouTube ? (
+      {isEmbeddedVideo ? (
         <iframe
-          src={youtubeEmbedSrc}
+          src={isYouTube ? youtubeEmbedSrc : vimeoEmbedSrc}
           title={title}
           className="w-full h-full"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -133,7 +167,7 @@ export function VideoPlayer({ thumbnail, title, videoSrc, durationSeconds, onAdd
       )}
 
       {/* Play overlay when paused */}
-      {!isYouTube && !isPlaying && (
+      {!isEmbeddedVideo && !isPlaying && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/40">
           <button
             onClick={() => {
@@ -151,7 +185,7 @@ export function VideoPlayer({ thumbnail, title, videoSrc, durationSeconds, onAdd
       )}
 
       {/* Controls overlay */}
-      {!isYouTube && (
+      {!isEmbeddedVideo && (
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity">
         {/* Progress bar */}
         <div

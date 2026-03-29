@@ -35,6 +35,7 @@ const footballPositions = [
 
 export default function SignupPage() {
   const router = useRouter()
+  const [userType, setUserType] = useState<"admin" | "player">("player")
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -74,6 +75,7 @@ export default function SignupPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          userType,
           name,
           password,
           birthYear: birthYear ? Number(birthYear) : null,
@@ -130,28 +132,59 @@ export default function SignupPage() {
 
         <div className="glass-card rounded-2xl p-8">
           <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Join Player IQ Hub</h2>
-          <p className="text-muted-foreground text-center mb-6">Register your player profile</p>
+          <p className="text-muted-foreground text-center mb-6">Choose the account type before registering</p>
 
-          <div className="grid grid-cols-2 gap-3 mb-8">
-            {features.map((feature) => (
-              <div key={feature} className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                  <Check className="w-3 h-3 text-primary" />
-                </div>
-                <span className="text-xs text-muted-foreground">{feature}</span>
-              </div>
-            ))}
+          <div className="grid grid-cols-2 gap-2 mb-6">
+            <button
+              type="button"
+              onClick={() => setUserType("player")}
+              className={`h-11 rounded-lg border text-sm font-semibold transition-colors ${
+                userType === "player"
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-secondary/50 text-foreground"
+              }`}
+            >
+              Player
+            </button>
+            <button
+              type="button"
+              onClick={() => setUserType("admin")}
+              className={`h-11 rounded-lg border text-sm font-semibold transition-colors ${
+                userType === "admin"
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-secondary/50 text-foreground"
+              }`}
+            >
+              Administrator
+            </button>
           </div>
+
+          {userType === "player" ? (
+            <div className="grid grid-cols-2 gap-3 mb-8">
+              {features.map((feature) => (
+                <div key={feature} className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-3 h-3 text-primary" />
+                  </div>
+                  <span className="text-xs text-muted-foreground">{feature}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4 mb-8">
+              <p className="text-sm text-white/80">Administrator account with platform management permissions.</p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="name" className="text-foreground">
-                Player Name
+                {userType === "admin" ? "Administrator Name" : "Player Name"}
               </Label>
               <Input
                 id="name"
                 type="text"
-                placeholder="Nicholas Costa"
+                placeholder={userType === "admin" ? "Pau Llacer" : "Nicholas Costa"}
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -184,96 +217,106 @@ export default function SignupPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="birthYear" className="text-foreground">
-                  Birth Year
-                </Label>
-                <Input
-                  id="birthYear"
-                  type="number"
-                  placeholder="2012"
-                  min="1990"
-                  max="2020"
-                  value={birthYear}
-                  onChange={(e) => setBirthYear(e.target.value)}
-                  className="bg-secondary/50 border-border focus:border-primary h-11"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="position" className="text-foreground">
-                  Position
-                </Label>
-                <select
-                  id="position"
-                  value={position}
-                  onChange={(e) => setPosition(e.target.value)}
-                  className="w-full rounded-md border border-border bg-secondary/50 px-3 text-sm text-foreground focus:border-primary focus:outline-none h-11"
-                >
-                  <option value="">Select position</option>
-                  {footballPositions.map((item) => (
-                    <option key={item} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+            {userType === "player" ? (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="birthYear" className="text-foreground">
+                      Birth Year
+                    </Label>
+                    <Input
+                      id="birthYear"
+                      type="number"
+                      placeholder="2012"
+                      min="1990"
+                      max="2020"
+                      value={birthYear}
+                      onChange={(e) => setBirthYear(e.target.value)}
+                      className="bg-secondary/50 border-border focus:border-primary h-11"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="position" className="text-foreground">
+                      Position
+                    </Label>
+                    <select
+                      id="position"
+                      value={position}
+                      onChange={(e) => setPosition(e.target.value)}
+                      className="w-full rounded-md border border-border bg-secondary/50 px-3 text-sm text-foreground focus:border-primary focus:outline-none h-11"
+                    >
+                      <option value="">Select position</option>
+                      {footballPositions.map((item) => (
+                        <option key={item} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="photo" className="text-foreground">
-                Player Photo
-              </Label>
-              <Input
-                id="photo"
-                type="file"
-                accept="image/*"
-                onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)}
-                className="bg-secondary/50 border-border focus:border-primary h-11 file:text-xs file:mr-3 file:bg-primary/20 file:border-0 file:px-3 file:py-2 file:rounded-md"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="photo" className="text-foreground">
+                    Player Photo
+                  </Label>
+                  <Input
+                    id="photo"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)}
+                    className="bg-secondary/50 border-border focus:border-primary h-11 file:text-xs file:mr-3 file:bg-primary/20 file:border-0 file:px-3 file:py-2 file:rounded-md"
+                  />
+                </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="club" className="text-foreground">
-                  Club
-                </Label>
-                <Input
-                  id="club"
-                  type="text"
-                  placeholder="FC Westchester"
-                  value={club}
-                  onChange={(e) => setClub(e.target.value)}
-                  className="bg-secondary/50 border-border focus:border-primary h-11"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="nationality" className="text-foreground">
-                  Nationality
-                </Label>
-                <Input
-                  id="nationality"
-                  type="text"
-                  placeholder="USA"
-                  value={nationality}
-                  onChange={(e) => setNationality(e.target.value)}
-                  className="bg-secondary/50 border-border focus:border-primary h-11"
-                />
-              </div>
-            </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="club" className="text-foreground">
+                      Club
+                    </Label>
+                    <Input
+                      id="club"
+                      type="text"
+                      placeholder="FC Westchester"
+                      value={club}
+                      onChange={(e) => setClub(e.target.value)}
+                      className="bg-secondary/50 border-border focus:border-primary h-11"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="nationality" className="text-foreground">
+                      Nationality
+                    </Label>
+                    <Input
+                      id="nationality"
+                      type="text"
+                      placeholder="USA"
+                      value={nationality}
+                      onChange={(e) => setNationality(e.target.value)}
+                      className="bg-secondary/50 border-border focus:border-primary h-11"
+                    />
+                  </div>
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="statement" className="text-foreground">
-                Statement
-              </Label>
-              <Textarea
-                id="statement"
-                placeholder="I will prove myself to the world"
-                value={statement}
-                onChange={(e) => setStatement(e.target.value)}
-                className="bg-secondary/50 border-border focus:border-primary"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="statement" className="text-foreground">
+                    Statement
+                  </Label>
+                  <Textarea
+                    id="statement"
+                    placeholder="I will prove myself to the world"
+                    value={statement}
+                    onChange={(e) => setStatement(e.target.value)}
+                    className="bg-secondary/50 border-border focus:border-primary"
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                <p className="text-sm text-white/70">
+                  Administrators are stored in the `users` table with `name` and `password`.
+                </p>
+              </div>
+            )}
 
             {error ? <p className="text-sm text-red-400">{error}</p> : null}
 
@@ -282,7 +325,7 @@ export default function SignupPage() {
               disabled={isLoading}
               className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold uppercase tracking-wider mt-6"
             >
-              {isLoading ? "Creating account..." : "Create player"}
+              {isLoading ? "Creating account..." : `Create ${userType === "admin" ? "administrator" : "player"}`}
             </Button>
           </form>
 

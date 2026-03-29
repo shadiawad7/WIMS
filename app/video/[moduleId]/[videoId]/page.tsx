@@ -1,6 +1,10 @@
 import { DashboardHeader } from "@/components/dashboard-header"
 import { VideoPageContent } from "@/components/video-page-content"
-import { getModuleMeta, getModuleVideos } from "@/lib/module-videos"
+import { getSessionFromCookies } from "@/lib/auth"
+import { getModuleMeta } from "@/lib/module-metadata"
+import { getModuleVideos } from "@/lib/module-videos"
+import { getPassedVideoIdsForUser, getQuizForVideo } from "@/lib/video-quiz"
+import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
 
 export default async function VideoPage({
@@ -9,7 +13,8 @@ export default async function VideoPage({
   params: Promise<{ moduleId: string; videoId: string }>
 }) {
   const { moduleId, videoId } = await params
-  const moduleMeta = getModuleMeta(moduleId)
+  const session = getSessionFromCookies(await cookies())
+  const moduleMeta = await getModuleMeta(moduleId)
 
   if (!moduleMeta) {
     notFound()
@@ -29,13 +34,35 @@ export default async function VideoPage({
     )
   }
 
-  const selectedVideo = videos.find((video) => video.id === videoId) || videos[0]
+  const passedVideoIds =
+    session?.role === "player" ? await getPassedVideoIdsForUser(session.id, moduleMeta.id) : new Set<string>()
+  const normalizedVideos = videos.map((video) =>
+    passedVideoIds.has(video.id)
+      ? {
+          ...video,
+          status: "completed" as const,
+        }
+      : video,
+  )
+  const selectedVideo = normalizedVideos.find((video) => video.id === videoId) || normalizedVideos[0]
+  const { quiz, result } = await getQuizForVideo(moduleMeta.id, selectedVideo.id, {
+    includeCorrectAnswers: session?.role === "admin",
+    userId: session?.role === "player" ? session.id : undefined,
+    questionCount: session?.role === "player" ? 3 : undefined,
+  })
 
   return (
     <main className="min-h-screen">
       <div className="relative z-10">
         <DashboardHeader />
-        <VideoPageContent moduleId={moduleMeta.id} moduleName={moduleMeta.name} video={selectedVideo} />
+        <VideoPageContent
+          moduleId={moduleMeta.id}
+          moduleName={moduleMeta.name}
+          video={selectedVideo}
+          role={session?.role ?? null}
+          initialQuiz={quiz}
+          initialQuizResult={result}
+        />
       </div>
     </main>
   )

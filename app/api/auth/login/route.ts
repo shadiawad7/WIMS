@@ -1,16 +1,19 @@
 import { NextResponse } from "next/server"
 import { query } from "@/lib/db"
-import { verifyPassword } from "@/lib/password"
+import { verifyStoredPassword } from "@/lib/password"
+import { AUTH_NAME_COOKIE, AUTH_ROLE_COOKIE, AUTH_SESSION_COOKIE, isValidUserRole } from "@/lib/auth"
 
 type LoginPayload = {
   name?: string
   password?: string
+  userType?: string
 }
 
-type LoginRow = {
+type UserLoginRow = {
   id: number
   name: string
-  password_hash: string | null
+  tipo: string | null
+  password: string | null
 }
 
 export async function POST(request: Request) {
@@ -19,17 +22,21 @@ export async function POST(request: Request) {
 
     const name = body.name?.trim()
     const password = body.password?.trim()
+    const userType = body.userType?.trim().toLowerCase()
     if (!name) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 })
     }
     if (!password) {
       return NextResponse.json({ error: "Password is required" }, { status: 400 })
     }
+    if (!isValidUserRole(userType)) {
+      return NextResponse.json({ error: "User type is required" }, { status: 400 })
+    }
 
-    const { rows } = await query<LoginRow>(
+    const { rows } = await query<UserLoginRow>(
       `
-      SELECT id, name, password_hash
-      FROM players
+      SELECT id, name, tipo, password
+      FROM users
       WHERE LOWER(name) = LOWER($1)
       ORDER BY id DESC
       LIMIT 1
@@ -37,26 +44,68 @@ export async function POST(request: Request) {
       [name],
     )
 
-    if (!rows[0]) {
+    const sessionUser = rows[0]
+    if (!sessionUser) {
       return NextResponse.json(
-        { error: "Player not found. Please sign up first." },
-        { status: 401 },
-      )
-    }
-    if (!rows[0].password_hash) {
-      return NextResponse.json(
-        { error: "This player has no password yet. Please sign up again." },
+        { error: "User not found. Please sign up first." },
         { status: 401 },
       )
     }
 
-    const isValidPassword = await verifyPassword(password, rows[0].password_hash)
+    const dbRole = sessionUser.tipo?.trim().toLowerCase()
+    const normalizedDbRole =
+      dbRole === "admin" || dbRole === "player"
+        ? dbRole
+        : dbRole === "administrador"
+          ? "admin"
+          : dbRole === "jugador"
+            ? "player"
+            : null
+
+    if (!normalizedDbRole) {
+      return NextResponse.json(
+        { error: 'Invalid "tipo" value in users table. Expected "admin" or "player".' },
+        { status: 500 },
+      )
+    }
+
+    if (normalizedDbRole !== userType) {
+      return NextResponse.json(
+        { error: `This account is registered as ${normalizedDbRole === "admin" ? "Administrator" : "Player"}.` },
+        { status: 401 },
+      )
+    }
+
+    if (!sessionUser.password) {
+      return NextResponse.json(
+        { error: "This account has no password yet. Please sign up again." },
+        { status: 401 },
+      )
+    }
+
+    const isValidPassword = await verifyStoredPassword(password, sessionUser.password)
     if (!isValidPassword) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
     }
 
-    const response = NextResponse.json({ player: { id: rows[0].id, name: rows[0].name } })
-    response.cookies.set("player_session", String(rows[0].id), {
+    const response = NextResponse.json({
+      user: { id: sessionUser.id, name: sessionUser.name, role: normalizedDbRole },
+    })
+    response.cookies.set(AUTH_SESSION_COOKIE, String(sessionUser.id), {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    })
+    response.cookies.set(AUTH_ROLE_COOKIE, normalizedDbRole, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    })
+    response.cookies.set(AUTH_NAME_COOKIE, sessionUser.name, {
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
@@ -67,17 +116,10 @@ export async function POST(request: Request) {
     return response
   } catch (error) {
     console.error("Login error:", error)
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "code" in error &&
-      (error as { code?: string }).code === "42703"
-    ) {
-      return NextResponse.json(
-        { error: 'Missing column "password_hash" in players table. Run DB migration first.' },
-        { status: 500 },
-      )
-    }
-    return NextResponse.json({ error: "Could not login" }, { status: 500 })
+    const message =
+      typeof error === "object" && error !== null && "message" in error
+        ? String((error as { message: unknown }).message)
+        : "Could not login"
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

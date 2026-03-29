@@ -22,7 +22,7 @@ export function DashboardHeader() {
           <Settings className="w-5 h-5" />
         </Link>
 
-        <Link href="/" className="text-white hover:text-white/90 transition-colors p-2">
+        <Link href="/api/auth/logout" className="text-white hover:text-white/90 transition-colors p-2">
           <LogOut className="w-5 h-5" />
         </Link>
       </div>

@@ -24,3 +24,15 @@ export async function verifyPassword(password: string, storedHash: string): Prom
 
   return timingSafeEqual(storedKey, key)
 }
+
+export async function verifyStoredPassword(password: string, storedValue: string): Promise<boolean> {
+  if (!storedValue) {
+    return false
+  }
+
+  if (!storedValue.includes(":")) {
+    return password === storedValue
+  }
+
+  return verifyPassword(password, storedValue)
+}

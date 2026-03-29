@@ -1,21 +1,6 @@
 import { query } from "@/lib/db"
-import type { YouTubeMetadata } from "@/lib/youtube"
-
-export type ModuleRouteId =
-  | "methodology"
-  | "modern-footy"
-  | "physical-prep"
-  | "positions"
-  | "video-analysis"
-
-type ModuleMeta = {
-  id: ModuleRouteId
-  table: string
-  name: string
-  director: string
-  description: string
-  thumbnail: string
-}
+import { getDefaultModuleMeta, type ModuleMeta, type ModuleRouteId } from "@/lib/module-metadata"
+import type { VimeoMetadata } from "@/lib/vimeo"
 
 export type Highlight = {
   id: string
@@ -42,49 +27,6 @@ export type ModuleVideo = {
   highlights: Highlight[]
 }
 
-const MODULE_META: Record<ModuleRouteId, ModuleMeta> = {
-  methodology: {
-    id: "methodology",
-    table: "methodology",
-    name: "METHODOLOGY",
-    director: "Pau Llacer",
-    description: "Concepts of Football",
-    thumbnail: "/football-tactics-whiteboard-strategy.jpg",
-  },
-  "modern-footy": {
-    id: "modern-footy",
-    table: "modern_footy",
-    name: "MODERN FOOTY",
-    director: "Pau Llacer",
-    description: "World Class Modern Style",
-    thumbnail: "/modern-football-barcelona-style-play.jpg",
-  },
-  "physical-prep": {
-    id: "physical-prep",
-    table: "physical_prep",
-    name: "PHYSICAL PREP",
-    director: "Pau Llacer",
-    description: "Prevent Injuries & Prepare Body",
-    thumbnail: "/soccer-player-fitness-training-gym.jpg",
-  },
-  positions: {
-    id: "positions",
-    table: "positions",
-    name: "POSITIONS",
-    director: "Pau Llacer",
-    description: "Master Your Position",
-    thumbnail: "/soccer-field-positions-diagram.jpg",
-  },
-  "video-analysis": {
-    id: "video-analysis",
-    table: "video_analysis",
-    name: "VIDEO ANALYSIS",
-    director: "Pau Llacer",
-    description: "Concepts of Football",
-    thumbnail: "/football-video-analysis-screen-tactical.jpg",
-  },
-}
-
 type DbRow = Record<string, unknown>
 
 const safeIdentifier = /^[a-zA-Z_][a-zA-Z0-9_]*$/
@@ -98,7 +40,13 @@ function quoteIdentifier(value: string) {
 
 function parseModuleRouteId(value: string): ModuleRouteId | null {
   const normalized = value.trim().toLowerCase().replaceAll("_", "-")
-  if (normalized in MODULE_META) {
+  if (normalized in {
+    methodology: true,
+    "modern-footy": true,
+    "physical-prep": true,
+    positions: true,
+    "video-analysis": true,
+  }) {
     return normalized as ModuleRouteId
   }
   return null
@@ -169,7 +117,7 @@ function formatDuration(durationSeconds: number, rawDuration?: string) {
   return `${mins}:${secs.toString().padStart(2, "0")}`
 }
 
-function extractYouTubeId(url?: string) {
+function extractRemoteVideoId(url?: string) {
   if (!url) {
     return ""
   }
@@ -181,6 +129,12 @@ function extractYouTubeId(url?: string) {
     }
     if (parsed.hostname.includes("youtu.be")) {
       return parsed.pathname.replace("/", "")
+    }
+    const segments = parsed.pathname.split("/").filter(Boolean)
+    for (let index = segments.length - 1; index >= 0; index -= 1) {
+      if (/^\d+$/.test(segments[index])) {
+        return segments[index]
+      }
     }
     if (parsed.pathname.includes("/shorts/")) {
       return parsed.pathname.split("/shorts/")[1]?.split("/")[0] || ""
@@ -211,9 +165,9 @@ function deriveVideoId(row: DbRow, videoSrc: string, fallbackTitle: string) {
     return fromSlug
   }
 
-  const ytId = extractYouTubeId(videoSrc)
-  if (ytId) {
-    return `yt-${ytId}`
+  const remoteId = extractRemoteVideoId(videoSrc)
+  if (remoteId) {
+    return `remote-${remoteId}`
   }
 
   const fromTitle = slugify(fallbackTitle)
@@ -309,12 +263,12 @@ export function getModuleMeta(moduleId: string) {
   if (!parsed) {
     return null
   }
-  return MODULE_META[parsed]
+  return getDefaultModuleMeta(parsed)
 }
 
 export async function getModuleVideos(moduleId: string) {
   const meta = getModuleMeta(moduleId)
-  if (!meta) {
+  if (!meta?.table) {
     return []
   }
 
@@ -336,7 +290,7 @@ type AddVideoResult =
 export async function addVideoUrlToModule(
   moduleId: string,
   videoUrl: string,
-  metadata?: Partial<YouTubeMetadata>,
+  metadata?: Partial<VimeoMetadata>,
 ): Promise<AddVideoResult> {
   const meta = getModuleMeta(moduleId)
   if (!meta) {
@@ -362,7 +316,7 @@ export async function addVideoUrlToModule(
 
   const now = new Date()
   const generatedTitle = metadata?.title || `Video ${now.toISOString().slice(0, 16).replace("T", " ")}`
-  const generatedSlug = metadata?.videoId || extractYouTubeId(videoUrl) || `video-${now.getTime()}`
+  const generatedSlug = metadata?.videoId || extractRemoteVideoId(videoUrl) || `video-${now.getTime()}`
   const videosColumn = columnsByName.get("videos")
   const videoUrlColumn = columnsByName.get("video_url")
   const videoDirectorColumn = columnsByName.get("video_director")

@@ -7,14 +7,27 @@ import { VideoPlayer } from "@/components/video-player"
 import { TimelineHighlights } from "@/components/timeline-highlights"
 import { BeneficialSlider } from "@/components/beneficial-slider"
 import type { ModuleVideo } from "@/lib/module-videos"
+import { VideoQuizPanel } from "@/components/video-quiz-panel"
+import type { UserRole } from "@/lib/auth"
+import type { VideoQuiz, VideoQuizResult } from "@/lib/video-quiz"
 
 type VideoPageContentProps = {
   moduleId: string
   moduleName: string
   video: ModuleVideo
+  role: UserRole | null
+  initialQuiz: VideoQuiz | null
+  initialQuizResult: VideoQuizResult | null
 }
 
-export function VideoPageContent({ moduleId, moduleName, video }: VideoPageContentProps) {
+export function VideoPageContent({
+  moduleId,
+  moduleName,
+  video,
+  role,
+  initialQuiz,
+  initialQuizResult,
+}: VideoPageContentProps) {
   const [isLiked, setIsLiked] = useState(false)
   const [userHighlights, setUserHighlights] = useState<{ id: string; time: number; user: string; note?: string }[]>(
     [],
@@ -122,6 +135,14 @@ export function VideoPageContent({ moduleId, moduleName, video }: VideoPageConte
           </div>
 
           <BeneficialSlider onSubmit={handleBeneficialSubmit} />
+
+          <VideoQuizPanel
+            moduleId={moduleId}
+            videoId={video.id}
+            role={role}
+            initialQuiz={initialQuiz}
+            initialResult={initialQuizResult}
+          />
         </div>
       </div>
     </div>

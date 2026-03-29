@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
+import { cookies } from "next/headers"
+import { getSessionFromCookies } from "@/lib/auth"
 import { addVideoUrlToModule, getModuleMeta, getModuleVideos } from "@/lib/module-videos"
-import { extractYouTubeVideoId, fetchYouTubeMetadata } from "@/lib/youtube"
+import { extractVimeoVideoId, fetchVimeoMetadata } from "@/lib/vimeo"
 
 type PostPayload = {
   url?: string
@@ -31,6 +33,11 @@ export async function POST(
   context: { params: Promise<{ moduleId: string }> },
 ) {
   const { moduleId } = await context.params
+  const session = getSessionFromCookies(await cookies())
+
+  if (!session || session.role !== "admin") {
+    return NextResponse.json({ error: "Only administrators can upload videos" }, { status: 403 })
+  }
 
   try {
     const body = (await request.json()) as PostPayload
@@ -51,15 +58,15 @@ export async function POST(
       return NextResponse.json({ error: "Only http(s) URLs are allowed" }, { status: 400 })
     }
 
-    const youtubeId = extractYouTubeVideoId(videoUrl)
-    if (!youtubeId) {
+    const vimeoId = extractVimeoVideoId(videoUrl)
+    if (!vimeoId) {
       return NextResponse.json(
-        { error: "Only YouTube URLs are supported for official metadata right now" },
+        { error: "Only Vimeo URLs are supported for official metadata right now" },
         { status: 400 },
       )
     }
 
-    const metadata = await fetchYouTubeMetadata(videoUrl)
+    const metadata = await fetchVimeoMetadata(videoUrl)
     const result = await addVideoUrlToModule(moduleId, videoUrl, metadata)
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: result.status })

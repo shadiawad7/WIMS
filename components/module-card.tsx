@@ -46,17 +46,20 @@ export function ModuleCard({ module }: ModuleCardProps) {
           {/* LINEA MAS FUERTE */}
           <div className="h-[2px] bg-gradient-to-r from-primary to-primary/20 mb-2" />
 
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-base text-white/80 font-medium">
-                <span className="uppercase">Director:</span> {module.director}
-              </p>
+          <div className="relative min-h-[8.5rem]">
+            <p className="flex items-center gap-1 text-base text-white/80 font-medium whitespace-nowrap min-w-0">
+              <span className="uppercase shrink-0">Director:</span>
+              <span className="block flex-1 min-w-0">{module.director}</span>
+            </p>
+            <div className="pr-20">
               <p className="text-base text-white/60 mt-1 line-clamp-2">
                 {module.description}
               </p>
             </div>
 
-            <ProgressCircle percentage={0} size={80} strokeWidth={4} />
+            <div className="absolute right-0 bottom-0 shrink-0">
+              <ProgressCircle percentage={0} size={72} strokeWidth={4} />
+            </div>
           </div>
         </div>
       </div>
@@ -83,22 +86,25 @@ export function ModuleCard({ module }: ModuleCardProps) {
           {/* LINEA MAS FUERTE */}
           <div className="h-[2px] bg-gradient-to-r from-primary to-primary/20 mb-2" />
 
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-base text-white/80 font-medium">
-                <span className="uppercase">Director:</span> {module.director}
-              </p>
+          <div className="relative min-h-[8.5rem]">
+            <p className="flex items-center gap-1 text-base text-white/80 font-medium whitespace-nowrap min-w-0">
+              <span className="uppercase shrink-0">Director:</span>
+              <span className="block flex-1 min-w-0">{module.director}</span>
+            </p>
+            <div className="pr-20">
               <p className="text-base text-white/60 mt-1 line-clamp-2">
                 {module.description}
               </p>
             </div>
 
-            <ProgressCircle
-              percentage={module.completion}
-              size={80}
-              strokeWidth={4}
-              label="COMPLETE"
-            />
+            <div className="absolute right-0 bottom-0 shrink-0">
+              <ProgressCircle
+                percentage={module.completion}
+                size={72}
+                strokeWidth={4}
+                label="COMPLETE"
+              />
+            </div>
           </div>
         </div>
       </div>
