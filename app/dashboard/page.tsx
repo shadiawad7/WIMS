@@ -7,7 +7,6 @@ import { getSessionFromCookies } from "@/lib/auth"
 import { query } from "@/lib/db"
 import { getDashboardModules } from "@/lib/module-metadata"
 import { cookies } from "next/headers"
-import { redirect } from "next/navigation"
 
 export const dynamic = "force-dynamic"
 
@@ -80,26 +79,39 @@ export default async function DashboardPage() {
     )
 
     const player = rows[0]
-    if (!player) {
-      redirect("/login")
-    }
-
-    playerData = {
-      name: player.name,
-      birthYear: player.birth_year,
-      club: player.club || "N/A",
-      position: player.position || "N/A",
-      nationality: player.nationality || "N/A",
-      highlights: player.highlights ?? 0,
-      statement: player.statement || "No statement yet",
-      avatar: player.photo || "/young-soccer-player-portrait.png",
-      progress: 0,
-      continueWatching: player.watching ?? 0,
-      posts: player.your_posts ?? 0,
-      favorites: player.favorites ?? 0,
-      communityMembers: player.community ?? 0,
-      clipOfWeekend: "COMING SOON",
-    }
+    playerData = player
+      ? {
+          name: player.name,
+          birthYear: player.birth_year,
+          club: player.club || "N/A",
+          position: player.position || "N/A",
+          nationality: player.nationality || "N/A",
+          highlights: player.highlights ?? 0,
+          statement: player.statement || "No statement yet",
+          avatar: player.photo || "/young-soccer-player-portrait.png",
+          progress: 0,
+          continueWatching: player.watching ?? 0,
+          posts: player.your_posts ?? 0,
+          favorites: player.favorites ?? 0,
+          communityMembers: player.community ?? 0,
+          clipOfWeekend: "COMING SOON",
+        }
+      : {
+          name: session.name,
+          birthYear: null,
+          club: "N/A",
+          position: "Player",
+          nationality: "N/A",
+          highlights: 0,
+          statement: "No statement yet",
+          avatar: "/young-soccer-player-portrait.png",
+          progress: 0,
+          continueWatching: 0,
+          posts: 0,
+          favorites: 0,
+          communityMembers: 0,
+          clipOfWeekend: "COMING SOON",
+        }
   } else {
     const { rows } = await query<AdminRow>(
       `
@@ -112,26 +124,39 @@ export default async function DashboardPage() {
     )
 
     const admin = rows[0]
-    if (!admin) {
-      redirect("/login")
-    }
-
-    playerData = {
-      name: admin.name,
-      birthYear: null,
-      club: "WIMS",
-      position: "Administrator",
-      nationality: "N/A",
-      highlights: 0,
-      statement: "Control total de la plataforma y los contenidos.",
-      avatar: "/young-soccer-player-portrait.png",
-      progress: 100,
-      continueWatching: 0,
-      posts: 0,
-      favorites: 0,
-      communityMembers: 0,
-      clipOfWeekend: "ADMIN MODE",
-    }
+    playerData = admin
+      ? {
+          name: admin.name,
+          birthYear: null,
+          club: "WIMS",
+          position: "Administrator",
+          nationality: "N/A",
+          highlights: 0,
+          statement: "Control total de la plataforma y los contenidos.",
+          avatar: "/young-soccer-player-portrait.png",
+          progress: 100,
+          continueWatching: 0,
+          posts: 0,
+          favorites: 0,
+          communityMembers: 0,
+          clipOfWeekend: "ADMIN MODE",
+        }
+      : {
+          name: session.name,
+          birthYear: null,
+          club: "WIMS",
+          position: "Administrator",
+          nationality: "N/A",
+          highlights: 0,
+          statement: "Control total de la plataforma y los contenidos.",
+          avatar: "/young-soccer-player-portrait.png",
+          progress: 100,
+          continueWatching: 0,
+          posts: 0,
+          favorites: 0,
+          communityMembers: 0,
+          clipOfWeekend: "ADMIN MODE",
+        }
   }
 
   return (
