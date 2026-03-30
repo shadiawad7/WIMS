@@ -5,7 +5,7 @@ import { getModuleMeta } from "@/lib/module-metadata"
 import { getModuleVideos } from "@/lib/module-videos"
 import { getPassedVideoIdsForUser, getQuizForVideo } from "@/lib/video-quiz"
 import { cookies } from "next/headers"
-import { notFound, redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 
 export const dynamic = "force-dynamic"
 
@@ -16,9 +16,6 @@ export default async function VideoPage({
 }) {
   const { moduleId, videoId } = await params
   const session = getSessionFromCookies(await cookies())
-  if (!session) {
-    redirect("/login")
-  }
   const moduleMeta = await getModuleMeta(moduleId)
 
   if (!moduleMeta) {
