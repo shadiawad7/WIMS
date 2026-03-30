@@ -1,5 +1,4 @@
 import { DashboardHeader } from "@/components/dashboard-header"
-import { DashboardSessionRestore } from "@/components/dashboard-session-restore"
 import { EditModulePanel } from "@/components/edit-module-panel"
 import { PlayerProfile } from "@/components/player-profile"
 import { ModuleCard } from "@/components/module-card"
@@ -35,13 +34,9 @@ export default async function DashboardPage() {
   const cookieStore = await cookies()
   const session = getSessionFromCookies(cookieStore)
 
-  if (!session) {
-    return <DashboardSessionRestore />
-  }
-
   const modules = await getDashboardModules()
   const visibleModules = modules.map((module) => {
-    if (session.role === "admin") {
+    if (session?.role === "admin") {
       return {
         ...module,
         locked: false,
@@ -53,7 +48,24 @@ export default async function DashboardPage() {
 
   let playerData
 
-  if (session.role === "player") {
+  if (!session) {
+    playerData = {
+      name: "Guest",
+      birthYear: null,
+      club: "WIMS",
+      position: "Player",
+      nationality: "N/A",
+      highlights: 0,
+      statement: "Session unavailable in this request.",
+      avatar: "/young-soccer-player-portrait.png",
+      progress: 0,
+      continueWatching: 0,
+      posts: 0,
+      favorites: 0,
+      communityMembers: 0,
+      clipOfWeekend: "WELCOME",
+    }
+  } else if (session.role === "player") {
     const { rows } = await query<PlayerRow>(
       `
       SELECT
@@ -191,7 +203,7 @@ export default async function DashboardPage() {
                 <div className="mt-4 h-px w-full bg-gradient-to-r from-white/20 via-primary/35 to-transparent" />
               </div>
 
-              {session.role === "admin" ? <EditModulePanel modules={modules} /> : null}
+              {session?.role === "admin" ? <EditModulePanel modules={modules} /> : null}
 
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-5">
                 {visibleModules.map((module) => (
