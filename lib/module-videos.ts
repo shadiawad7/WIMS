@@ -314,6 +314,8 @@ export async function addVideoUrlToModule(
     column?.data_type === "real" ||
     column?.data_type === "double precision"
 
+  const asJsonValue = (value: unknown) => JSON.stringify(value)
+
   const now = new Date()
   const generatedTitle = metadata?.title || `Video ${now.toISOString().slice(0, 16).replace("T", " ")}`
   const generatedSlug = metadata?.videoId || extractRemoteVideoId(videoUrl) || `video-${now.getTime()}`
@@ -326,17 +328,17 @@ export async function addVideoUrlToModule(
   const adaptedVideosValue = isArrayColumn(videosColumn)
     ? [videoUrl]
     : isJsonColumn(videosColumn)
-      ? [{ url: videoUrl }]
+      ? asJsonValue([{ url: videoUrl }])
       : videoUrl
   const adaptedVideoUrlValue = isArrayColumn(videoUrlColumn)
     ? [videoUrl]
     : isJsonColumn(videoUrlColumn)
-      ? { url: videoUrl }
+      ? asJsonValue({ url: videoUrl })
       : videoUrl
   const adaptedContinuoWatching = isArrayColumn(continuoWatchingColumn)
     ? []
     : isJsonColumn(continuoWatchingColumn)
-      ? []
+      ? asJsonValue([])
       : isBooleanColumn(continuoWatchingColumn)
         ? false
         : isNumericColumn(continuoWatchingColumn)
@@ -345,7 +347,7 @@ export async function addVideoUrlToModule(
   const adaptedVideoDirector = isArrayColumn(videoDirectorColumn)
     ? []
     : isJsonColumn(videoDirectorColumn)
-      ? null
+      ? asJsonValue(null)
       : null
 
   const generatedValues: Record<string, unknown> = {
