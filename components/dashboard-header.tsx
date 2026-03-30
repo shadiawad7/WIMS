@@ -4,7 +4,7 @@ import { Settings, LogOut } from "lucide-react"
 export function DashboardHeader() {
   return (
     <header className="liquid-glass-panel flex justify-between items-center px-6 md:px-8 py-4 rounded-none border-x-0 border-t-0">
-      <Link href="/dashboard" className="flex items-center gap-2">
+      <Link href="/dashboard" prefetch={false} className="flex items-center gap-2">
         <span className="text-xl font-bold text-foreground">PLAYER IQ</span>
         <span className="text-xl font-bold text-primary">HUB</span>
       </Link>

@@ -59,6 +59,7 @@ export function VideoPageContent({
     <div className="px-4 md:px-8 py-6">
       <Link
         href={`/module/${moduleId}`}
+        prefetch={false}
         className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
       >
         <ArrowLeft className="w-5 h-5" />

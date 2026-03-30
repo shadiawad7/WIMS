@@ -47,7 +47,10 @@ export default function LoginPage() {
       localStorage.setItem("playerId", String(data.user.id))
       localStorage.setItem("playerName", data.user.name)
       localStorage.setItem("playerRole", data.user.role)
-      router.push("/dashboard")
+
+      // Force a full navigation so auth cookies set by the login response are
+      // already available before protected routes start prefetching/rendering.
+      window.location.assign("/dashboard")
     } catch {
       setError("Network error. Try again.")
     } finally {

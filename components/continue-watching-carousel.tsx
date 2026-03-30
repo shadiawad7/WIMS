@@ -40,6 +40,7 @@ export function ContinueWatchingCarousel({ videos }: ContinueWatchingCarouselPro
             <Link
               key={video.id}
               href={`/video/${video.moduleId}/${video.id}`}
+              prefetch={false}
               className={`flex-shrink-0 w-32 transition-all duration-300 ${
                 index === activeIndex ? "opacity-100 scale-100" : "opacity-50 scale-95"
               }`}

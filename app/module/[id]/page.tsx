@@ -48,6 +48,7 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
         <div className="px-4 md:px-8 py-6">
           <Link
             href="/dashboard"
+            prefetch={false}
             className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-6"
           >
             <ArrowLeft className="w-5 h-5" />

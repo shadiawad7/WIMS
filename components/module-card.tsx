@@ -67,7 +67,7 @@ export function ModuleCard({ module }: ModuleCardProps) {
   }
 
   return (
-    <Link href={`/module/${module.id}`}>
+    <Link href={`/module/${module.id}`} prefetch={false}>
       <div className="liquid-glass-panel rounded-[26px] overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer group hover:border-primary/45 transform-gpu hover:-translate-y-2 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]">
         <div className="relative h-40 overflow-hidden">
           <img
