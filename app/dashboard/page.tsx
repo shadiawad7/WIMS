@@ -1,4 +1,5 @@
 import { DashboardHeader } from "@/components/dashboard-header"
+import { DashboardSessionRestore } from "@/components/dashboard-session-restore"
 import { EditModulePanel } from "@/components/edit-module-panel"
 import { PlayerProfile } from "@/components/player-profile"
 import { ModuleCard } from "@/components/module-card"
@@ -36,7 +37,7 @@ export default async function DashboardPage() {
   const session = getSessionFromCookies(cookieStore)
 
   if (!session) {
-    redirect("/login")
+    return <DashboardSessionRestore />
   }
 
   const modules = await getDashboardModules()
