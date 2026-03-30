@@ -2,12 +2,11 @@ import { DashboardHeader } from "@/components/dashboard-header"
 import { VideoCard } from "@/components/video-card"
 import { ContinueWatchingCarousel } from "@/components/continue-watching-carousel"
 import { AddVideoUrlForm } from "@/components/add-video-url-form"
+import { BackToDashboardButton } from "@/components/back-to-dashboard-button"
 import { getSessionFromCookies } from "@/lib/auth"
 import { getModuleMeta } from "@/lib/module-metadata"
 import { getModuleVideos } from "@/lib/module-videos"
 import { getPassedVideoIdsForUser } from "@/lib/video-quiz"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
 import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
 
@@ -48,10 +47,11 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
         <DashboardHeader />
 
         <div className="px-4 md:px-8 py-6">
-          <a href="/dashboard" className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-6">
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back to Dashboard</span>
-          </a>
+          <BackToDashboardButton
+            sessionId={session?.id}
+            sessionName={session?.name}
+            sessionRole={session?.role}
+          />
 
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-8">
             <div>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { query } from "@/lib/db"
 import { verifyStoredPassword } from "@/lib/password"
-import { AUTH_NAME_COOKIE, AUTH_ROLE_COOKIE, AUTH_SESSION_COOKIE, isValidUserRole } from "@/lib/auth"
+import { isValidUserRole, setAuthCookies } from "@/lib/auth"
 
 type LoginPayload = {
   name?: string
@@ -91,26 +91,10 @@ export async function POST(request: Request) {
     const response = NextResponse.json({
       user: { id: sessionUser.id, name: sessionUser.name, role: normalizedDbRole },
     })
-    response.cookies.set(AUTH_SESSION_COOKIE, String(sessionUser.id), {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
-    })
-    response.cookies.set(AUTH_ROLE_COOKIE, normalizedDbRole, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
-    })
-    response.cookies.set(AUTH_NAME_COOKIE, sessionUser.name, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
+    setAuthCookies(response, {
+      id: sessionUser.id,
+      role: normalizedDbRole,
+      name: sessionUser.name,
     })
 
     return response
