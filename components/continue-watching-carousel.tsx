@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { ChevronLeft, ChevronRight, Play } from "lucide-react"
+import { buildVideoHref } from "@/lib/routes"
 
 interface Video {
   id: string
@@ -38,7 +39,7 @@ export function ContinueWatchingCarousel({ videos }: ContinueWatchingCarouselPro
           {videos.map((video, index) => (
             <a
               key={video.id}
-              href={`/video/${video.moduleId}/${video.id}`}
+              href={buildVideoHref(video.moduleId, video.id)}
               className={`flex-shrink-0 w-32 transition-all duration-300 ${
                 index === activeIndex ? "opacity-100 scale-100" : "opacity-50 scale-95"
               }`}

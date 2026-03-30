@@ -1,4 +1,5 @@
 import { query } from "@/lib/db"
+import { normalizeModulePathId } from "@/lib/routes"
 
 export type ModuleRouteId =
   | "methodology"
@@ -33,7 +34,7 @@ type ModuleMetaRow = {
 }
 
 function normalizeDashboardModuleId(value: string): DashboardModuleId | null {
-  const normalized = value.trim().toLowerCase().replaceAll("_", "-").replaceAll(" ", "-")
+  const normalized = normalizeModulePathId(value)
   if (normalized in DEFAULT_MODULE_META) {
     return normalized as DashboardModuleId
   }

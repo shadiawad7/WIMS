@@ -9,6 +9,7 @@ import type { ModuleVideo } from "@/lib/module-videos"
 import { VideoQuizPanel } from "@/components/video-quiz-panel"
 import type { UserRole } from "@/lib/auth"
 import type { VideoQuiz, VideoQuizResult } from "@/lib/video-quiz"
+import { buildModuleHref } from "@/lib/routes"
 
 type VideoPageContentProps = {
   moduleId: string
@@ -57,7 +58,7 @@ export function VideoPageContent({
   return (
     <div className="px-4 md:px-8 py-6">
       <a
-        href={`/module/${moduleId}`}
+        href={buildModuleHref(moduleId)}
         className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
       >
         <ArrowLeft className="w-5 h-5" />

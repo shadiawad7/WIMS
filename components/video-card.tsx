@@ -1,6 +1,7 @@
 "use client"
 
 import { Clock, TrendingUp, Eye, ThumbsUp, Play } from "lucide-react"
+import { buildVideoHref } from "@/lib/routes"
 
 type VideoStatus = "completed" | "in-progress" | "start"
 
@@ -45,7 +46,7 @@ export function VideoCard({ video }: VideoCardProps) {
   }
 
   return (
-    <a href={`/video/${video.moduleId}/${video.id}`}>
+    <a href={buildVideoHref(video.moduleId, video.id)}>
       <div className="liquid-glass-panel rounded-[24px] overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer group shadow-lg hover:shadow-xl hover:border-primary/35 h-full flex flex-col">
         {/* Thumbnail - square aspect ratio */}
         <div className="relative aspect-video overflow-hidden">

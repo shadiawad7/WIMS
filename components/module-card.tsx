@@ -1,5 +1,6 @@
 "use client"
 import { Lock } from "lucide-react"
+import { buildModuleHref } from "@/lib/routes"
 import { ProgressCircle } from "./progress-circle"
 
 interface ModuleCardProps {
@@ -65,7 +66,7 @@ export function ModuleCard({ module }: ModuleCardProps) {
   }
 
   return (
-    <a href={`/module/${module.id}`}>
+    <a href={buildModuleHref(module.id)}>
       <div className="liquid-glass-panel rounded-[26px] overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer group hover:border-primary/45 transform-gpu hover:-translate-y-2 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]">
         <div className="relative h-40 overflow-hidden">
           <img
