@@ -69,6 +69,7 @@ function toEditableQuestions(quiz: VideoQuiz | null) {
 }
 
 export function VideoQuizPanel({ moduleId, videoId, role, initialQuiz, initialResult }: VideoQuizPanelProps) {
+  const [effectiveRole, setEffectiveRole] = useState<UserRole | null>(role)
   const [questions, setQuestions] = useState<EditableQuestion[]>(toEditableQuestions(initialQuiz))
   const [result, setResult] = useState<VideoQuizResult | null>(initialResult)
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({})
@@ -82,12 +83,66 @@ export function VideoQuizPanel({ moduleId, videoId, role, initialQuiz, initialRe
   const currentQuestion = questions[safeQuestionIndex] || null
 
   useEffect(() => {
+    setEffectiveRole(role)
     setQuestions(toEditableQuestions(initialQuiz))
     setResult(initialResult)
     setSelectedAnswers({})
     setCurrentQuestionIndex(0)
     setIsExamOpen(false)
-  }, [initialQuiz, initialResult])
+  }, [role, initialQuiz, initialResult])
+
+  useEffect(() => {
+    if (role) {
+      return
+    }
+
+    if (typeof window === "undefined") {
+      return
+    }
+
+    const storedRole = window.localStorage.getItem("playerRole")
+    if (storedRole === "admin" || storedRole === "player") {
+      setEffectiveRole(storedRole)
+    }
+  }, [role])
+
+  useEffect(() => {
+    if (!effectiveRole) {
+      return
+    }
+
+    if (initialQuiz || initialResult) {
+      return
+    }
+
+    let isCancelled = false
+
+    const loadQuiz = async () => {
+      try {
+        const response = await fetch(`/api/modules/${moduleId}/videos/${videoId}/quiz`, {
+          credentials: "include",
+          cache: "no-store",
+        })
+        const payload = await response.json()
+        if (!response.ok || isCancelled) {
+          return
+        }
+
+        setQuestions(toEditableQuestions(payload.quiz || null))
+        setResult(payload.result || null)
+      } catch {
+        if (!isCancelled) {
+          setError("Could not load video exam")
+        }
+      }
+    }
+
+    loadQuiz()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [effectiveRole, initialQuiz, initialResult, moduleId, videoId])
 
   const playerCanSubmit = useMemo(
     () => questions.length > 0 && questions.every((question) => Boolean(selectedAnswers[question.id])),
@@ -253,11 +308,11 @@ export function VideoQuizPanel({ moduleId, videoId, role, initialQuiz, initialRe
     }
   }
 
-  if (!role) {
+  if (!effectiveRole) {
     return null
   }
 
-  if (role === "admin") {
+  if (effectiveRole === "admin") {
     return (
       <div className="glass-card rounded-xl p-5 space-y-4">
         <div className="flex items-start justify-between gap-4">

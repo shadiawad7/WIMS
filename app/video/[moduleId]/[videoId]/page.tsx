@@ -4,6 +4,7 @@ import { getSessionFromCookies } from "@/lib/auth"
 import { getModuleMeta } from "@/lib/module-metadata"
 import { getModuleVideos } from "@/lib/module-videos"
 import { getPassedVideoIdsForUser, getQuizForVideo } from "@/lib/video-quiz"
+import { fetchVimeoMetadata } from "@/lib/vimeo"
 import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
 
@@ -46,7 +47,31 @@ export default async function VideoPage({
         }
       : video,
   )
-  const selectedVideo = normalizedVideos.find((video) => video.id === videoId) || normalizedVideos[0]
+  const rawSelectedVideo = normalizedVideos.find((video) => video.id === videoId) || normalizedVideos[0]
+  const selectedVideo =
+    rawSelectedVideo.videoSrc &&
+    (rawSelectedVideo.title === "Untitled Video" ||
+      !rawSelectedVideo.durationSeconds ||
+      !rawSelectedVideo.thumbnail ||
+      !rawSelectedVideo.description)
+      ? await (async () => {
+          try {
+            const metadata = await fetchVimeoMetadata(rawSelectedVideo.videoSrc!)
+            return {
+              ...rawSelectedVideo,
+              title: rawSelectedVideo.title === "Untitled Video" ? metadata.title : rawSelectedVideo.title,
+              coach: rawSelectedVideo.coach || metadata.coach,
+              duration: !rawSelectedVideo.durationSeconds ? metadata.duration : rawSelectedVideo.duration,
+              durationSeconds: rawSelectedVideo.durationSeconds || metadata.durationSeconds,
+              thumbnail: rawSelectedVideo.thumbnail || metadata.thumbnail,
+              description: rawSelectedVideo.description || metadata.description,
+              views: rawSelectedVideo.views || metadata.views,
+            }
+          } catch {
+            return rawSelectedVideo
+          }
+        })()
+      : rawSelectedVideo
   const { quiz, result } = await getQuizForVideo(moduleMeta.id, selectedVideo.id, {
     includeCorrectAnswers: session?.role === "admin",
     userId: session?.role === "player" ? session.id : undefined,
