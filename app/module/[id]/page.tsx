@@ -46,14 +46,10 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
         <DashboardHeader />
 
         <div className="px-4 md:px-8 py-6">
-          <Link
-            href="/dashboard"
-            prefetch={false}
-            className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-6"
-          >
+          <a href="/dashboard" className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-6">
             <ArrowLeft className="w-5 h-5" />
             <span>Back to Dashboard</span>
-          </Link>
+          </a>
 
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-8">
             <div>

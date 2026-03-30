@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { ChevronLeft, ChevronRight, Play } from "lucide-react"
 
 interface Video {
@@ -37,10 +36,9 @@ export function ContinueWatchingCarousel({ videos }: ContinueWatchingCarouselPro
       <div className="relative">
         <div className="flex gap-3 overflow-hidden">
           {videos.map((video, index) => (
-            <Link
+            <a
               key={video.id}
               href={`/video/${video.moduleId}/${video.id}`}
-              prefetch={false}
               className={`flex-shrink-0 w-32 transition-all duration-300 ${
                 index === activeIndex ? "opacity-100 scale-100" : "opacity-50 scale-95"
               }`}
@@ -61,7 +59,7 @@ export function ContinueWatchingCarousel({ videos }: ContinueWatchingCarouselPro
               </div>
               <p className="text-xs text-foreground mt-2 truncate">{video.title}</p>
               <p className="text-xs text-muted-foreground truncate">Coach: {video.coach}</p>
-            </Link>
+            </a>
           ))}
         </div>
 

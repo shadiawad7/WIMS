@@ -1,7 +1,6 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import Link from "next/link"
 import { ArrowLeft, Heart, Clock, TrendingUp, Eye, ThumbsUp } from "lucide-react"
 import { VideoPlayer } from "@/components/video-player"
 import { TimelineHighlights } from "@/components/timeline-highlights"
@@ -57,14 +56,13 @@ export function VideoPageContent({
 
   return (
     <div className="px-4 md:px-8 py-6">
-      <Link
+      <a
         href={`/module/${moduleId}`}
-        prefetch={false}
         className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
       >
         <ArrowLeft className="w-5 h-5" />
         <span>Back to Module</span>
-      </Link>
+      </a>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <div className="lg:col-span-2 space-y-5">
