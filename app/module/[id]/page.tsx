@@ -3,6 +3,7 @@ import { VideoCard } from "@/components/video-card"
 import { ContinueWatchingCarousel } from "@/components/continue-watching-carousel"
 import { AddVideoUrlForm } from "@/components/add-video-url-form"
 import { BackToDashboardButton } from "@/components/back-to-dashboard-button"
+import { DirectorPreviewVideo } from "@/components/director-preview-video"
 import { getSessionFromCookies } from "@/lib/auth"
 import { getModuleMeta } from "@/lib/module-metadata"
 import { getModuleVideos } from "@/lib/module-videos"
@@ -58,15 +59,7 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{moduleData.name}</h1>
               <div className="h-1 w-[50vw] bg-gradient-to-r from-primary to-orange-500 rounded-full mb-4" />
               <div className="flex items-start gap-4">
-                <div className="relative w-56 md:w-64 aspect-video rounded-[18px] border border-white/20 overflow-hidden">
-                  <video
-                    src="/Pau_Llacer.mov"
-                    className="w-full h-full object-cover"
-                    controls
-                    muted
-                    playsInline
-                  />
-                </div>
+                <DirectorPreviewVideo src="/Pau_Llacer.mov" title={moduleData.director} />
                 <div>
                   <p className="text-white/80 text-2xl whitespace-nowrap overflow-hidden text-ellipsis max-w-full">
                     <span className="text-white font-bold">DIRECTOR:</span> {moduleData.director}
