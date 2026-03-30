@@ -1,18 +1,39 @@
 "use client"
 
-import { FormEvent, useState } from "react"
+import { FormEvent, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import type { UserRole } from "@/lib/auth"
 
 type AddVideoUrlFormProps = {
   moduleId: string
+  initialRole?: UserRole
+  sessionId?: number
+  sessionName?: string
 }
 
-export function AddVideoUrlForm({ moduleId }: AddVideoUrlFormProps) {
+export function AddVideoUrlForm({
+  moduleId,
+  initialRole,
+  sessionId,
+  sessionName,
+}: AddVideoUrlFormProps) {
   const router = useRouter()
+  const [effectiveRole, setEffectiveRole] = useState<UserRole | null>(initialRole ?? null)
   const [url, setUrl] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+
+  useEffect(() => {
+    if (effectiveRole) {
+      return
+    }
+
+    const storedRole = window.localStorage.getItem("playerRole")
+    if (storedRole === "admin" || storedRole === "player") {
+      setEffectiveRole(storedRole)
+    }
+  }, [effectiveRole])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -29,6 +50,22 @@ export function AddVideoUrlForm({ moduleId }: AddVideoUrlFormProps) {
     setSuccess("")
 
     try {
+      const restorePayload = {
+        id: sessionId ?? Number(window.localStorage.getItem("playerId")),
+        name: sessionName ?? window.localStorage.getItem("playerName") ?? "",
+        role: effectiveRole ?? window.localStorage.getItem("playerRole") ?? "",
+      }
+
+      if (restorePayload.id && restorePayload.name && restorePayload.role === "admin") {
+        await fetch("/api/auth/restore", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(restorePayload),
+        })
+      }
+
       const response = await fetch(`/api/modules/${moduleId}/videos`, {
         method: "POST",
         headers: {
@@ -51,6 +88,10 @@ export function AddVideoUrlForm({ moduleId }: AddVideoUrlFormProps) {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  if (effectiveRole !== "admin") {
+    return null
   }
 
   return (

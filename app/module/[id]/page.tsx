@@ -81,11 +81,14 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
             </div>
           </div>
 
-          {session?.role === "admin" ? (
-            <div className="mb-6 max-w-3xl">
-              <AddVideoUrlForm moduleId={moduleData.id} />
-            </div>
-          ) : null}
+          <div className="mb-6 max-w-3xl">
+            <AddVideoUrlForm
+              moduleId={moduleData.id}
+              initialRole={session?.role}
+              sessionId={session?.id}
+              sessionName={session?.name}
+            />
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {videos.map((video) => (
