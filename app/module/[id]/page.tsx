@@ -11,6 +11,8 @@ import { ArrowLeft } from "lucide-react"
 import { cookies } from "next/headers"
 import { notFound, redirect } from "next/navigation"
 
+export const dynamic = "force-dynamic"
+
 export default async function ModulePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const session = getSessionFromCookies(await cookies())

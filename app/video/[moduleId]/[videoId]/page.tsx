@@ -7,6 +7,8 @@ import { getPassedVideoIdsForUser, getQuizForVideo } from "@/lib/video-quiz"
 import { cookies } from "next/headers"
 import { notFound, redirect } from "next/navigation"
 
+export const dynamic = "force-dynamic"
+
 export default async function VideoPage({
   params,
 }: {
