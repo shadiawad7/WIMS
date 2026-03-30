@@ -83,7 +83,7 @@ export default function LoginPage() {
           <Logo />
         </div>
 
-        <div className="glass-card rounded-2xl p-8">
+        <div className="liquid-glass-panel rounded-[28px] p-8">
           <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Welcome Back</h2>
           <p className="text-muted-foreground text-center mb-8">
             Sign in as administrator or player

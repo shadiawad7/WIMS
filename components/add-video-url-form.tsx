@@ -54,7 +54,7 @@ export function AddVideoUrlForm({ moduleId }: AddVideoUrlFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="glass-card rounded-xl p-4 space-y-3">
+    <form onSubmit={handleSubmit} className="liquid-glass-panel rounded-[24px] p-4 space-y-3">
       <p className="text-sm text-white/80 uppercase tracking-wider">Añadir video por URL</p>
       <div className="flex flex-col md:flex-row gap-2">
         <input

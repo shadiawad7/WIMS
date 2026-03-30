@@ -130,7 +130,7 @@ export default function SignupPage() {
           <Logo />
         </div>
 
-        <div className="glass-card rounded-2xl p-8">
+        <div className="liquid-glass-panel rounded-[28px] p-8">
           <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Join Player IQ Hub</h2>
           <p className="text-muted-foreground text-center mb-6">Choose the account type before registering</p>
 
@@ -171,7 +171,7 @@ export default function SignupPage() {
               ))}
             </div>
           ) : (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4 mb-8">
+            <div className="liquid-glass-chip rounded-2xl p-4 mb-8">
               <p className="text-sm text-white/80">Administrator account with platform management permissions.</p>
             </div>
           )}
@@ -311,7 +311,7 @@ export default function SignupPage() {
                 </div>
               </>
             ) : (
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <div className="liquid-glass-chip rounded-2xl p-4">
                 <p className="text-sm text-white/70">
                   Administrators are stored in the `users` table with `name` and `password`.
                 </p>

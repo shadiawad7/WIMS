@@ -3,7 +3,7 @@ import { Settings, LogOut } from "lucide-react"
 
 export function DashboardHeader() {
   return (
-    <header className="flex justify-between items-center px-6 md:px-8 py-4 bg-black/80 backdrop-blur-md border-b border-white/10">
+    <header className="liquid-glass-panel flex justify-between items-center px-6 md:px-8 py-4 rounded-none border-x-0 border-t-0">
       <Link href="/dashboard" className="flex items-center gap-2">
         <span className="text-xl font-bold text-foreground">PLAYER IQ</span>
         <span className="text-xl font-bold text-primary">HUB</span>

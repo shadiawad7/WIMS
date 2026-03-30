@@ -24,8 +24,8 @@ interface PlayerProfileProps {
 
 export function PlayerProfile({ player }: PlayerProfileProps) {
   return (
-    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 pb-15 flex flex-col border border-white/10">
-      <div className="origin-top scale-[1.05]">
+    <div className="liquid-glass-panel rounded-[28px] p-5 pb-15 flex flex-col">
+      <div className="relative z-10 origin-top scale-[1.05]">
         {/* Settings icon */}
         <div className="flex justify-end mb-3">
           <Link href="/settings" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -62,7 +62,7 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
         </div>
 
         {/* Statement */}
-        <div className="glass-card rounded-lg p-3 mb-5">
+        <div className="liquid-glass-chip rounded-2xl p-3 mb-5">
           <p className="text-xs italic text-muted-foreground text-center">"{player.statement}"</p>
           <p className="text-[11px] text-primary text-center mt-2">- {player.name}</p>
         </div>
@@ -73,7 +73,7 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
             <span className="text-xs text-muted-foreground">Progress Bar:</span>
             <span className="text-xs font-bold text-primary">{player.progress}%</span>
           </div>
-          <div className="h-2.5 bg-secondary rounded-full overflow-hidden">
+          <div className="h-2.5 rounded-full overflow-hidden bg-white/10 ring-1 ring-white/10">
             <div
               className="h-full rounded-full bg-gradient-to-r from-primary to-orange-500 transition-all duration-1000"
               style={{ width: `${player.progress}%`, boxShadow: "0 0 10px rgba(207, 56, 0, 0.5)" }}
@@ -83,7 +83,7 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
 
         {/* Clip of the weekend */}
       <Link href="/dashboard/community" className="mb-10">
-        <div className="glass-card rounded-lg p-3 hover:bg-white/5 transition-colors">
+        <div className="liquid-glass-chip rounded-2xl p-3 transition-colors hover:bg-white/8">
             <div className="flex items-center gap-2 mb-2">
               <Trophy className="w-4 h-4 text-primary" />
               <span className="text-xs uppercase tracking-wider text-muted-foreground">Clip of the Weekend</span>
@@ -96,7 +96,7 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
         <div className="space-y-2 mb-0 mt-4">
           <Link
             href="/dashboard/continue-watching"
-            className="flex items-center justify-between p-2.5 glass-card rounded-lg hover:bg-white/5 transition-colors"
+            className="flex items-center justify-between p-2.5 liquid-glass-chip rounded-2xl transition-colors hover:bg-white/8"
           >
             <div className="flex items-center gap-3">
               <Play className="w-4 h-4 text-primary" />
@@ -107,7 +107,7 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
 
           <Link
             href="/dashboard/community"
-            className="flex items-center justify-between p-2.5 glass-card rounded-lg hover:bg-white/5 transition-colors"
+            className="flex items-center justify-between p-2.5 liquid-glass-chip rounded-2xl transition-colors hover:bg-white/8"
           >
             <div className="flex items-center gap-3">
               <Users className="w-4 h-4 text-primary" />
@@ -118,7 +118,7 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
 
           <Link
             href="/dashboard/posts"
-            className="flex items-center justify-between p-2.5 glass-card rounded-lg hover:bg-white/5 transition-colors"
+            className="flex items-center justify-between p-2.5 liquid-glass-chip rounded-2xl transition-colors hover:bg-white/8"
           >
             <div className="flex items-center gap-3">
               <Video className="w-4 h-4 text-primary" />
@@ -129,7 +129,7 @@ export function PlayerProfile({ player }: PlayerProfileProps) {
 
           <Link
             href="/dashboard/favorites"
-            className="flex items-center justify-between p-2.5 glass-card rounded-lg hover:bg-white/5 transition-colors"
+            className="flex items-center justify-between p-2.5 liquid-glass-chip rounded-2xl transition-colors hover:bg-white/8"
           >
             <div className="flex items-center gap-3">
               <Heart className="w-4 h-4 text-primary" />

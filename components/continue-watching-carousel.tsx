@@ -31,7 +31,7 @@ export function ContinueWatchingCarousel({ videos }: ContinueWatchingCarouselPro
   if (videos.length === 0) return null
 
   return (
-    <div className="glass-card rounded-xl p-4">
+    <div className="liquid-glass-panel rounded-[24px] p-4">
       <h3 className="text-sm uppercase tracking-wider text-muted-foreground mb-4">Continue Watching</h3>
 
       <div className="relative">

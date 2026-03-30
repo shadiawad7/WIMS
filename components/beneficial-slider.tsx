@@ -19,7 +19,7 @@ export function BeneficialSlider({ onSubmit, initialValue = 50 }: BeneficialSlid
 
   if (submitted) {
     return (
-      <div className="glass-card rounded-xl p-4 text-center">
+      <div className="liquid-glass-panel rounded-[24px] p-4 text-center">
         <ThumbsUp className="w-8 h-8 text-primary mx-auto mb-2" />
         <h3 className="text-base font-semibold text-foreground mb-1">Thanks for your feedback!</h3>
         <p className="text-xs text-muted-foreground">You rated this video {value}% beneficial</p>
@@ -28,7 +28,7 @@ export function BeneficialSlider({ onSubmit, initialValue = 50 }: BeneficialSlid
   }
 
   return (
-    <div className="glass-card rounded-xl p-4">
+    <div className="liquid-glass-panel rounded-[24px] p-4">
       <h3 className="text-base font-semibold text-foreground mb-3">HOW BENEFICIAL WAS THIS VIDEO?</h3>
 
       <div className="mb-4">

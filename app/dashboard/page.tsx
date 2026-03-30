@@ -145,10 +145,22 @@ export default async function DashboardPage() {
 
             {/* Right content - Modules */}
             <div className="flex-1">
-              <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 inline-flex mb-6 border border-white/10">
-                <h2 className="text-xl font-semibold text-white uppercase tracking-wider">
-                  Football Portals Available
-                </h2>
+              <div className="mb-6">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/55 backdrop-blur-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                  Learning Hub
+                </div>
+                <div className="mt-3 flex items-end justify-between gap-4">
+                  <div>
+                    <h2 className="text-3xl md:text-4xl font-semibold tracking-[0.06em] text-white uppercase">
+                      Football Portals
+                    </h2>
+                    <p className="mt-2 max-w-2xl text-sm md:text-base text-white/58">
+                      Structured modules, coaching pathways and premium analysis in one place.
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 h-px w-full bg-gradient-to-r from-white/20 via-primary/35 to-transparent" />
               </div>
 
               {session.role === "admin" ? <EditModulePanel modules={modules} /> : null}

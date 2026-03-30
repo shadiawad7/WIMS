@@ -32,7 +32,7 @@ export default function HomePage() {
         </div>
 
         {/* Stats section - glass card */}
-        <div className="glass-card rounded-2xl px-8 md:px-16 py-10 mb-16 w-full max-w-4xl">
+        <div className="liquid-glass-panel rounded-[28px] px-8 md:px-16 py-10 mb-16 w-full max-w-4xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
             <AnimatedCounter end={2893} label="Members" />
             <AnimatedCounter end={89322} label="Minutes Watched" />

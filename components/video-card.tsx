@@ -47,7 +47,7 @@ export function VideoCard({ video }: VideoCardProps) {
 
   return (
     <Link href={`/video/${video.moduleId}/${video.id}`}>
-      <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer group shadow-lg border border-white/15 hover:shadow-xl hover:border-primary/40 h-full flex flex-col">
+      <div className="liquid-glass-panel rounded-[24px] overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer group shadow-lg hover:shadow-xl hover:border-primary/35 h-full flex flex-col">
         {/* Thumbnail - square aspect ratio */}
         <div className="relative aspect-video overflow-hidden">
           {video.previewVideo ? (

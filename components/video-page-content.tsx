@@ -81,7 +81,7 @@ export function VideoPageContent({
         </div>
 
         <div className="space-y-5">
-          <div className="glass-card rounded-xl p-5">
+          <div className="liquid-glass-panel rounded-[24px] p-5">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
               <div>
                 <p className="text-sm text-primary uppercase tracking-wider mb-1">{moduleName}</p>
@@ -92,7 +92,7 @@ export function VideoPageContent({
               <button
                 onClick={() => setIsLiked(!isLiked)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                  isLiked ? "bg-primary text-primary-foreground" : "glass-card hover:bg-white/10"
+                  isLiked ? "bg-primary text-primary-foreground" : "liquid-glass-chip hover:bg-white/8"
                 }`}
               >
                 <Heart className={`w-5 h-5 ${isLiked ? "fill-current" : ""}`} />

@@ -102,7 +102,7 @@ export function EditModulePanel({ modules }: EditModulePanelProps) {
   }
 
   return (
-    <div className="glass-card rounded-2xl p-5 mb-6 border border-white/10">
+    <div className="liquid-glass-panel rounded-[28px] p-5 mb-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
         <div>
           <h3 className="text-lg font-bold text-white uppercase tracking-wider">Edit Modules</h3>
