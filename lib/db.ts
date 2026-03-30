@@ -1,12 +1,25 @@
 import { Pool, type QueryResultRow } from "pg";
 
-const connectionString = process.env.DATABASE_URL;
+function normalizeDatabaseUrl(rawUrl: string) {
+  const url = new URL(rawUrl);
+  const sslMode = url.searchParams.get("sslmode");
 
-if (!connectionString) {
+  if (sslMode === "require" || sslMode === "prefer" || sslMode === "verify-ca") {
+    url.searchParams.set("sslmode", "verify-full");
+  }
+
+  return url.toString();
+}
+
+const rawConnectionString = process.env.DATABASE_URL;
+
+if (!rawConnectionString) {
   throw new Error("Missing DATABASE_URL in environment");
 }
 
-// Neon requires SSL; DATABASE_URL already includes sslmode=require
+const connectionString = normalizeDatabaseUrl(rawConnectionString);
+
+// Neon requires SSL. Normalize legacy sslmode values so pg does not emit warnings.
 export const pool = new Pool({
   connectionString,
   max: 10,

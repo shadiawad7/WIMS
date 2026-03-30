@@ -32,6 +32,14 @@ type ModuleMetaRow = {
   unlock_time: string | null
 }
 
+function normalizeDashboardModuleId(value: string): DashboardModuleId | null {
+  const normalized = value.trim().toLowerCase().replaceAll("_", "-").replaceAll(" ", "-")
+  if (normalized in DEFAULT_MODULE_META) {
+    return normalized as DashboardModuleId
+  }
+  return null
+}
+
 function isMissingModuleMetadataTable(error: unknown) {
   return typeof error === "object" && error !== null && "code" in error && (error as { code?: string }).code === "42P01"
 }
@@ -95,14 +103,19 @@ export const DEFAULT_MODULE_META: Record<DashboardModuleId, ModuleMeta> = {
 }
 
 function isDashboardModuleId(value: string): value is DashboardModuleId {
-  return value in DEFAULT_MODULE_META
+  return normalizeDashboardModuleId(value) !== null
 }
 
 function mapRowToMeta(row: ModuleMetaRow): ModuleMeta {
-  const fallback = DEFAULT_MODULE_META[row.module_id]
+  const normalizedId = normalizeDashboardModuleId(row.module_id)
+  if (!normalizedId) {
+    throw new Error(`Invalid module_id "${row.module_id}" in module_metadata`)
+  }
+
+  const fallback = DEFAULT_MODULE_META[normalizedId]
   return {
     ...fallback,
-    id: row.module_id,
+    id: normalizedId,
     name: row.name,
     director: row.director,
     description: row.description,
@@ -114,10 +127,11 @@ function mapRowToMeta(row: ModuleMetaRow): ModuleMeta {
 }
 
 export function getDefaultModuleMeta(moduleId: string) {
-  if (!isDashboardModuleId(moduleId)) {
+  const normalizedId = normalizeDashboardModuleId(moduleId)
+  if (!normalizedId) {
     return null
   }
-  return DEFAULT_MODULE_META[moduleId]
+  return DEFAULT_MODULE_META[normalizedId]
 }
 
 export async function getModuleMeta(moduleId: string) {
