@@ -13,6 +13,7 @@ export function EditModulePanel({ modules }: EditModulePanelProps) {
   const [selectedId, setSelectedId] = useState(modules[0]?.id ?? "")
   const [name, setName] = useState("")
   const [director, setDirector] = useState("")
+  const [directorVideoUrl, setDirectorVideoUrl] = useState("")
   const [description, setDescription] = useState("")
   const [thumbnail, setThumbnail] = useState("")
   const [completion, setCompletion] = useState("0")
@@ -29,6 +30,7 @@ export function EditModulePanel({ modules }: EditModulePanelProps) {
     if (!selectedModule) return
     setName(selectedModule.name)
     setDirector(selectedModule.director)
+    setDirectorVideoUrl(selectedModule.directorVideoUrl || "")
     setDescription(selectedModule.description)
     setThumbnail(selectedModule.thumbnail)
     setCompletion(String(selectedModule.completion))
@@ -74,6 +76,7 @@ export function EditModulePanel({ modules }: EditModulePanelProps) {
         body: JSON.stringify({
           name,
           director,
+          directorVideoUrl,
           description,
           thumbnail: thumbnailUrl,
           completion: Number(completion),
@@ -140,6 +143,40 @@ export function EditModulePanel({ modules }: EditModulePanelProps) {
             className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white"
             required
           />
+        </div>
+
+        <div className="space-y-3 lg:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h4 className="text-sm font-semibold uppercase tracking-[0.22em] text-white/90">
+                Director Video
+              </h4>
+              <p className="mt-1 text-xs text-white/50">
+                Reemplaza o elimina el video pequeño que aparece arriba a la izquierda dentro del módulo.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setDirectorVideoUrl("")}
+              className="rounded-lg border border-white/15 bg-white/6 px-3 py-2 text-xs font-medium text-white/70 transition-colors hover:text-white"
+            >
+              Remove video
+            </button>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm text-white/80">Director Video URL</label>
+            <input
+              type="text"
+              value={directorVideoUrl}
+              onChange={(event) => setDirectorVideoUrl(event.target.value)}
+              className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white"
+              placeholder="/Pau_Llacer.mov or https://..."
+            />
+            <p className="text-xs text-white/45">
+              Déjalo vacío para eliminar el video del director en este módulo.
+            </p>
+          </div>
         </div>
 
         <div className="space-y-2 lg:col-span-2">

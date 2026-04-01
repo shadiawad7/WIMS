@@ -287,6 +287,80 @@ type AddVideoResult =
   | { ok: true; video: ModuleVideo }
   | { ok: false; error: string; status: number }
 
+type UpdateVideoPayload = {
+  title?: string
+  coach?: string
+  duration?: string
+  popularity?: number
+  views?: number
+  beneficialRatio?: number
+  description?: string
+  videoUrl?: string
+  thumbnail?: string
+}
+
+function parseDurationTextToSeconds(duration: string) {
+  const parts = duration.split(":").map((part) => Number(part))
+  if (parts.some((value) => !Number.isFinite(value))) {
+    return 0
+  }
+  if (parts.length === 2) {
+    return parts[0] * 60 + parts[1]
+  }
+  if (parts.length === 3) {
+    return parts[0] * 3600 + parts[1] * 60 + parts[2]
+  }
+  return 0
+}
+
+function normalizeValueForColumn(value: unknown, column?: TableColumn) {
+  if (!column) {
+    return value
+  }
+
+  if (column.data_type === "ARRAY" || column.udt_name.startsWith("_")) {
+    if (Array.isArray(value)) {
+      return value
+    }
+    return value === null || value === undefined || value === "" ? [] : [value]
+  }
+
+  if (column.data_type === "json" || column.data_type === "jsonb") {
+    return JSON.stringify(value)
+  }
+
+  if (column.data_type === "boolean") {
+    return Boolean(value)
+  }
+
+  if (
+    column.data_type === "smallint" ||
+    column.data_type === "integer" ||
+    column.data_type === "bigint" ||
+    column.data_type === "numeric" ||
+    column.data_type === "real" ||
+    column.data_type === "double precision"
+  ) {
+    const numeric = typeof value === "number" ? value : Number(value)
+    return Number.isFinite(numeric) ? numeric : 0
+  }
+
+  return value
+}
+
+function buildVideoLookup(columnNames: string[]) {
+  if (columnNames.includes("id")) {
+    return `${quoteIdentifier("id")}::text = $1`
+  }
+  if (columnNames.includes("video_id")) {
+    return `${quoteIdentifier("video_id")} = $1`
+  }
+  if (columnNames.includes("slug")) {
+    return `${quoteIdentifier("slug")} = $1`
+  }
+  return ""
+}
+
 export async function addVideoUrlToModule(
   moduleId: string,
   videoUrl: string,
@@ -427,4 +501,157 @@ export async function addVideoUrlToModule(
   }
 
   return { ok: true, video: mapRowToVideo(created, meta) }
+}
+
+export async function updateModuleVideo(
+  moduleId: string,
+  videoId: string,
+  values: UpdateVideoPayload,
+  metadata?: Partial<VimeoMetadata>,
+): Promise<AddVideoResult> {
+  const meta = getModuleMeta(moduleId)
+  if (!meta?.table) {
+    return { ok: false, error: "Module not found", status: 404 }
+  }
+
+  const columns = await getTableColumns(meta.table)
+  if (columns.length === 0) {
+    return { ok: false, error: `Table "${meta.table}" does not exist or has no columns`, status: 500 }
+  }
+
+  const columnNames = columns.map((column) => column.column_name)
+  const whereClause = buildVideoLookup(columnNames)
+  if (!whereClause) {
+    return { ok: false, error: `No unique identifier found in table "${meta.table}"`, status: 500 }
+  }
+
+  const { rows: currentRows } = await query<DbRow>(
+    `SELECT * FROM ${quoteIdentifier(meta.table)} WHERE ${whereClause} LIMIT 1`,
+    [videoId],
+  )
+  const currentRow = currentRows[0]
+  if (!currentRow) {
+    return { ok: false, error: "Video not found", status: 404 }
+  }
+
+  const currentVideo = mapRowToVideo(currentRow, meta)
+  const columnsByName = new Map(columns.map((column) => [column.column_name, column]))
+  const isArrayColumn = (column?: TableColumn) => column?.data_type === "ARRAY" || column?.udt_name.startsWith("_")
+  const isJsonColumn = (column?: TableColumn) => column?.data_type === "json" || column?.data_type === "jsonb"
+  const effectiveVideoUrl = values.videoUrl?.trim() || currentVideo.videoSrc || ""
+  const effectiveTitle = values.title?.trim() || metadata?.title || currentVideo.title
+  const effectiveCoach = values.coach?.trim() || metadata?.coach || currentVideo.coach
+  const effectiveDuration = values.duration?.trim() || metadata?.duration || currentVideo.duration
+  const effectiveDurationSeconds =
+    metadata?.durationSeconds || parseDurationTextToSeconds(effectiveDuration) || currentVideo.durationSeconds
+  const effectiveThumbnail = values.thumbnail?.trim() || metadata?.thumbnail || currentVideo.thumbnail
+  const effectiveDescription = values.description?.trim() ?? metadata?.description ?? currentVideo.description
+  const effectivePopularity =
+    typeof values.popularity === "number" ? Math.max(0, Math.min(100, values.popularity)) : currentVideo.popularity
+  const effectiveViews = typeof values.views === "number" ? Math.max(0, values.views) : currentVideo.views
+  const effectiveBeneficial =
+    typeof values.beneficialRatio === "number"
+      ? Math.max(0, Math.min(100, values.beneficialRatio))
+      : currentVideo.beneficialRatio
+
+  const videosColumn = columnsByName.get("videos")
+  const videoUrlColumn = columnsByName.get("video_url")
+
+  const generatedValues: Record<string, unknown> = {
+    video_url: isArrayColumn(videoUrlColumn)
+      ? (effectiveVideoUrl ? [effectiveVideoUrl] : [])
+      : isJsonColumn(videoUrlColumn)
+        ? (effectiveVideoUrl ? { url: effectiveVideoUrl } : null)
+        : effectiveVideoUrl,
+    videos: isArrayColumn(videosColumn)
+      ? (effectiveVideoUrl ? [effectiveVideoUrl] : [])
+      : isJsonColumn(videosColumn)
+        ? (effectiveVideoUrl ? [{ url: effectiveVideoUrl }] : [])
+        : effectiveVideoUrl,
+    video_src: effectiveVideoUrl,
+    youtube_url: effectiveVideoUrl,
+    url: effectiveVideoUrl,
+    link: effectiveVideoUrl,
+    title: effectiveTitle,
+    name: effectiveTitle,
+    coach: effectiveCoach,
+    director: effectiveCoach,
+    author: effectiveCoach,
+    duration: effectiveDuration,
+    duration_seconds: effectiveDurationSeconds,
+    popularity: effectivePopularity,
+    views: effectiveViews,
+    beneficial_ratio: effectiveBeneficial,
+    beneficialratio: effectiveBeneficial,
+    thumbnail: effectiveThumbnail,
+    thumbnail_url: effectiveThumbnail,
+    cover: effectiveThumbnail,
+    image: effectiveThumbnail,
+    description: effectiveDescription,
+  }
+
+  const selectedEntries = Object.entries(generatedValues).filter(([column]) => columnNames.includes(column))
+  if (selectedEntries.length === 0) {
+    return { ok: false, error: `No editable columns found in table "${meta.table}"`, status: 500 }
+  }
+
+  const setClauses = selectedEntries.map(
+    ([column], index) => `${quoteIdentifier(column)} = $${index + 2}`,
+  )
+  const params = [
+    videoId,
+    ...selectedEntries.map(([column, value]) => normalizeValueForColumn(value, columnsByName.get(column))),
+  ]
+
+  const { rows } = await query<DbRow>(
+    `
+    UPDATE ${quoteIdentifier(meta.table)}
+    SET ${setClauses.join(", ")}
+    WHERE ${whereClause}
+    RETURNING *
+    `,
+    params,
+  )
+
+  const updated = rows[0]
+  if (!updated) {
+    return { ok: false, error: "Video update failed", status: 500 }
+  }
+
+  return { ok: true, video: mapRowToVideo(updated, meta) }
+}
+
+export async function deleteModuleVideo(moduleId: string, videoId: string) {
+  const meta = getModuleMeta(moduleId)
+  if (!meta?.table) {
+    return { ok: false as const, error: "Module not found", status: 404 }
+  }
+
+  const columns = await getTableColumns(meta.table)
+  if (columns.length === 0) {
+    return { ok: false as const, error: `Table "${meta.table}" does not exist or has no columns`, status: 500 }
+  }
+
+  const whereClause = buildVideoLookup(columns.map((column) => column.column_name))
+  if (!whereClause) {
+    return { ok: false as const, error: `No unique identifier found in table "${meta.table}"`, status: 500 }
+  }
+
+  const { rowCount } = await query(
+    `DELETE FROM ${quoteIdentifier(meta.table)} WHERE ${whereClause}`,
+    [videoId],
+  )
+
+  if (!rowCount) {
+    return { ok: false as const, error: "Video not found", status: 404 }
+  }
+
+  await query(`DELETE FROM player_video_quiz_results WHERE module_id = $1 AND video_id = $2`, [moduleId, videoId]).catch(
+    () => undefined,
+  )
+  await query(`DELETE FROM video_quizzes WHERE module_id = $1 AND video_id = $2`, [moduleId, videoId]).catch(
+    () => undefined,
+  )
+
+  return { ok: true as const }
 }

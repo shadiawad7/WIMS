@@ -59,7 +59,14 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{moduleData.name}</h1>
               <div className="h-1 w-[50vw] bg-gradient-to-r from-primary to-orange-500 rounded-full mb-4" />
               <div className="flex items-start gap-4">
-                <DirectorPreviewVideo src="/Pau_Llacer.mov" title={moduleData.director} />
+                {moduleData.directorVideoUrl ? (
+                  <DirectorPreviewVideo
+                    moduleId={moduleData.id}
+                    src={moduleData.directorVideoUrl}
+                    title={moduleData.director}
+                    isAdmin={session?.role === "admin"}
+                  />
+                ) : null}
                 <div>
                   <p className="text-white/80 text-2xl whitespace-nowrap overflow-hidden text-ellipsis max-w-full">
                     <span className="text-white font-bold">DIRECTOR:</span> {moduleData.director}

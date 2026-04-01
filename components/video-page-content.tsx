@@ -10,6 +10,7 @@ import { VideoQuizPanel } from "@/components/video-quiz-panel"
 import type { UserRole } from "@/lib/auth"
 import type { VideoQuiz, VideoQuizResult } from "@/lib/video-quiz"
 import { buildModuleHref } from "@/lib/routes"
+import { EditVideoDetailsPanel } from "@/components/edit-video-details-panel"
 
 type VideoPageContentProps = {
   moduleId: string
@@ -99,6 +100,12 @@ export function VideoPageContent({
                 <span>{isLiked ? "Favorited" : "Add to Favorites"}</span>
               </button>
             </div>
+
+            {role === "admin" ? (
+              <div className="mb-4">
+                <EditVideoDetailsPanel moduleId={moduleId} video={video} />
+              </div>
+            ) : null}
 
             <div className="grid grid-cols-2 gap-x-5 gap-y-4 mb-4">
               <div className="flex items-center gap-3">

@@ -6,6 +6,7 @@ import { getModuleMeta, updateModuleMeta } from "@/lib/module-metadata"
 type UpdatePayload = {
   name?: string
   director?: string
+  directorVideoUrl?: string
   description?: string
   thumbnail?: string
   completion?: number
@@ -39,12 +40,24 @@ export async function PATCH(
   const { moduleId } = await context.params
 
   try {
+    const current = await getModuleMeta(moduleId)
+    if (!current) {
+      return NextResponse.json({ error: "Module not found" }, { status: 404 })
+    }
+
     const body = (await request.json()) as UpdatePayload
-    const name = body.name?.trim()
-    const director = body.director?.trim()
-    const description = body.description?.trim()
-    const thumbnail = body.thumbnail?.trim()
-    const completion = Math.max(0, Math.min(100, Number(body.completion ?? 0)))
+    const name = body.name?.trim() || current.name
+    const director = body.director?.trim() || current.director
+    const directorVideoUrl =
+      typeof body.directorVideoUrl === "string"
+        ? body.directorVideoUrl.trim()
+        : current.directorVideoUrl || ""
+    const description = body.description?.trim() || current.description
+    const thumbnail = body.thumbnail?.trim() || current.thumbnail
+    const completion = Math.max(0, Math.min(100, Number(body.completion ?? current.completion)))
+    const locked = typeof body.locked === "boolean" ? body.locked : Boolean(current.locked)
+    const unlockTime =
+      typeof body.unlockTime === "string" ? body.unlockTime.trim() : (current.unlockTime ?? "")
 
     if (!name || !director || !description || !thumbnail) {
       return NextResponse.json(
@@ -56,11 +69,12 @@ export async function PATCH(
     const updated = await updateModuleMeta(moduleId, {
       name,
       director,
+      directorVideoUrl,
       description,
       thumbnail,
       completion,
-      locked: Boolean(body.locked),
-      unlockTime: body.unlockTime?.trim() || "",
+      locked,
+      unlockTime,
     })
 
     if (!updated) {
