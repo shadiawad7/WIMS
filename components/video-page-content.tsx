@@ -101,11 +101,9 @@ export function VideoPageContent({
               </button>
             </div>
 
-            {role === "admin" ? (
-              <div className="mb-4">
-                <EditVideoDetailsPanel moduleId={moduleId} video={video} />
-              </div>
-            ) : null}
+            <div className="mb-4">
+              <EditVideoDetailsPanel moduleId={moduleId} video={video} initialRole={role} />
+            </div>
 
             <div className="grid grid-cols-2 gap-x-5 gap-y-4 mb-4">
               <div className="flex items-center gap-3">

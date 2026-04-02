@@ -1,18 +1,21 @@
 "use client"
 
-import { useState, type FormEvent } from "react"
+import { useEffect, useState, type FormEvent } from "react"
 import { useRouter } from "next/navigation"
 import { Pencil, Trash2, X } from "lucide-react"
 import type { ModuleVideo } from "@/lib/module-videos"
 import { buildModuleHref } from "@/lib/routes"
+import type { UserRole } from "@/lib/auth"
 
 type EditVideoDetailsPanelProps = {
   moduleId: string
   video: ModuleVideo
+  initialRole?: UserRole | null
 }
 
-export function EditVideoDetailsPanel({ moduleId, video }: EditVideoDetailsPanelProps) {
+export function EditVideoDetailsPanel({ moduleId, video, initialRole = null }: EditVideoDetailsPanelProps) {
   const router = useRouter()
+  const [effectiveRole, setEffectiveRole] = useState<UserRole | null>(initialRole)
   const [isOpen, setIsOpen] = useState(false)
   const [title, setTitle] = useState(video.title)
   const [coach, setCoach] = useState(video.coach)
@@ -27,12 +30,47 @@ export function EditVideoDetailsPanel({ moduleId, video }: EditVideoDetailsPanel
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  useEffect(() => {
+    if (effectiveRole) {
+      return
+    }
+
+    const storedRole = window.localStorage.getItem("playerRole")
+    if (storedRole === "admin" || storedRole === "player") {
+      setEffectiveRole(storedRole)
+    }
+  }, [effectiveRole])
+
+  const restoreAdminSession = async () => {
+    const id = Number(window.localStorage.getItem("playerId"))
+    const name = window.localStorage.getItem("playerName") ?? ""
+    const role = effectiveRole ?? window.localStorage.getItem("playerRole")
+
+    if (!Number.isInteger(id) || id <= 0 || !name || role !== "admin") {
+      return
+    }
+
+    await fetch("/api/auth/restore", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id,
+        name,
+        role,
+      }),
+    })
+  }
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError("")
     setIsSubmitting(true)
 
     try {
+      await restoreAdminSession()
+
       const response = await fetch(`/api/modules/${moduleId}/videos/${video.id}`, {
         method: "PATCH",
         headers: {
@@ -71,6 +109,8 @@ export function EditVideoDetailsPanel({ moduleId, video }: EditVideoDetailsPanel
     setIsDeleting(true)
 
     try {
+      await restoreAdminSession()
+
       const response = await fetch(`/api/modules/${moduleId}/videos/${video.id}`, {
         method: "DELETE",
       })
@@ -87,6 +127,10 @@ export function EditVideoDetailsPanel({ moduleId, video }: EditVideoDetailsPanel
     } finally {
       setIsDeleting(false)
     }
+  }
+
+  if (effectiveRole !== "admin") {
+    return null
   }
 
   return (
