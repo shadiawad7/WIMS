@@ -64,7 +64,7 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
                     moduleId={moduleData.id}
                     src={moduleData.directorVideoUrl}
                     title={moduleData.director}
-                    isAdmin={session?.role === "admin"}
+                    initialRole={session?.role ?? null}
                   />
                 ) : null}
                 <div>

@@ -3,16 +3,23 @@
 import { useEffect, useRef, useState } from "react"
 import { Pencil, Play, Trash2, X } from "lucide-react"
 import { useRouter } from "next/navigation"
+import type { UserRole } from "@/lib/auth"
 
 type DirectorPreviewVideoProps = {
   moduleId: string
   src: string
   title: string
-  isAdmin?: boolean
+  initialRole?: UserRole | null
 }
 
-export function DirectorPreviewVideo({ moduleId, src, title, isAdmin = false }: DirectorPreviewVideoProps) {
+export function DirectorPreviewVideo({
+  moduleId,
+  src,
+  title,
+  initialRole = null,
+}: DirectorPreviewVideoProps) {
   const router = useRouter()
+  const [effectiveRole, setEffectiveRole] = useState<UserRole | null>(initialRole)
   const [isOpen, setIsOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [draftUrl, setDraftUrl] = useState(src)
@@ -45,6 +52,17 @@ export function DirectorPreviewVideo({ moduleId, src, title, isAdmin = false }: 
   useEffect(() => {
     setDraftUrl(src)
   }, [src])
+
+  useEffect(() => {
+    if (effectiveRole) {
+      return
+    }
+
+    const storedRole = window.localStorage.getItem("playerRole")
+    if (storedRole === "admin" || storedRole === "player") {
+      setEffectiveRole(storedRole)
+    }
+  }, [effectiveRole])
 
   useEffect(() => {
     let active = true
@@ -118,11 +136,35 @@ export function DirectorPreviewVideo({ moduleId, src, title, isAdmin = false }: 
     setIsEditing(false)
   }
 
+  const restoreAdminSession = async () => {
+    const id = Number(window.localStorage.getItem("playerId"))
+    const name = window.localStorage.getItem("playerName") ?? ""
+    const role = effectiveRole ?? window.localStorage.getItem("playerRole")
+
+    if (!Number.isInteger(id) || id <= 0 || !name || role !== "admin") {
+      return
+    }
+
+    await fetch("/api/auth/restore", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id,
+        name,
+        role,
+      }),
+    })
+  }
+
   const saveDirectorVideo = async (nextUrl: string) => {
     setIsSaving(true)
     setError("")
 
     try {
+      await restoreAdminSession()
+
       const response = await fetch(`/api/modules/${moduleId}`, {
         method: "PATCH",
         headers: {
@@ -183,7 +225,7 @@ export function DirectorPreviewVideo({ moduleId, src, title, isAdmin = false }: 
           </div>
         </button>
 
-        {isAdmin ? (
+        {effectiveRole === "admin" ? (
           <button
             type="button"
             onClick={() => setIsEditing(true)}
