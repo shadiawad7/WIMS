@@ -230,11 +230,11 @@ export function EditVideoDetailsPanel({ moduleId, video, initialRole = null }: E
 
       {isOpen ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 backdrop-blur-md"
+          className="fixed inset-0 z-50 overflow-y-auto bg-black/45 px-3 py-4 backdrop-blur-md"
           onClick={() => setIsOpen(false)}
         >
           <div
-            className="liquid-glass-panel relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[28px] p-4 md:p-6"
+            className="liquid-glass-panel relative mx-auto my-4 w-full max-w-3xl rounded-[28px] p-4 md:p-5"
             onClick={(event) => event.stopPropagation()}
           >
             <button
@@ -267,7 +267,7 @@ export function EditVideoDetailsPanel({ moduleId, video, initialRole = null }: E
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3 md:gap-4 md:grid-cols-2">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <div className="space-y-2 md:col-span-2">
                 <label className="text-sm text-white/80">Title</label>
                 <input
@@ -368,7 +368,7 @@ export function EditVideoDetailsPanel({ moduleId, video, initialRole = null }: E
                 />
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 md:col-span-2">
+              <div className="sticky bottom-0 z-10 -mx-4 mt-2 flex flex-wrap items-center gap-3 border-t border-white/10 bg-[rgba(32,18,12,0.88)] px-4 pt-4 pb-1 backdrop-blur-xl md:col-span-2 md:-mx-5 md:px-5">
                 <button
                   type="submit"
                   disabled={isSubmitting}
