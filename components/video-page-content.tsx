@@ -30,6 +30,7 @@ export function VideoPageContent({
   initialQuizResult,
 }: VideoPageContentProps) {
   const [isLiked, setIsLiked] = useState(false)
+  const [liveViews, setLiveViews] = useState(video.views)
   const [userHighlights, setUserHighlights] = useState<{ id: string; time: number; user: string; note?: string }[]>(
     [],
   )
@@ -70,11 +71,14 @@ export function VideoPageContent({
         <div className="lg:col-span-2 space-y-5">
           <div className="w-full max-w-[760px] mx-auto space-y-5">
             <VideoPlayer
+              moduleId={moduleId}
+              videoId={video.id}
               thumbnail={video.thumbnail}
               title={video.title}
               videoSrc={video.videoSrc}
               durationSeconds={video.durationSeconds}
               onAddHighlight={handleAddHighlight}
+              onViewsTracked={setLiveViews}
             />
 
             <TimelineHighlights highlights={allHighlights} duration={video.durationSeconds || 1} onSeek={handleSeek} />
@@ -124,7 +128,7 @@ export function VideoPageContent({
                 <Eye className="w-5 h-5 text-primary" />
                 <div>
                   <p className="text-xs text-muted-foreground uppercase mb-1">Views</p>
-                  <p className="text-base font-semibold text-foreground">{video.views.toLocaleString()}</p>
+                  <p className="text-base font-semibold text-foreground">{liveViews.toLocaleString()}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">

@@ -53,16 +53,52 @@ function parseModuleRouteId(value: string): ModuleRouteId | null {
 }
 
 function firstString(row: DbRow, keys: string[], fallback = "") {
-  for (const key of keys) {
-    const candidate = row[key]
-    if (typeof candidate === "string" && candidate.trim().length > 0) {
-      return candidate.trim()
-    }
-    if (Array.isArray(candidate)) {
-      const first = candidate.find((value) => typeof value === "string" && value.trim().length > 0)
-      if (typeof first === "string") {
-        return first.trim()
+  const extractString = (candidate: unknown): string | null => {
+    if (typeof candidate === "string") {
+      const trimmed = candidate.trim()
+      if (!trimmed) {
+        return null
       }
+
+      if ((trimmed.startsWith("{") && trimmed.endsWith("}")) || (trimmed.startsWith("[") && trimmed.endsWith("]"))) {
+        try {
+          return extractString(JSON.parse(trimmed))
+        } catch {
+          return trimmed
+        }
+      }
+
+      return trimmed
+    }
+
+    if (Array.isArray(candidate)) {
+      for (const item of candidate) {
+        const nested = extractString(item)
+        if (nested) {
+          return nested
+        }
+      }
+      return null
+    }
+
+    if (candidate && typeof candidate === "object") {
+      const record = candidate as Record<string, unknown>
+      for (const key of ["url", "src", "value", "text", "name", "title"]) {
+        const nested = extractString(record[key])
+        if (nested) {
+          return nested
+        }
+      }
+      return null
+    }
+
+    return null
+  }
+
+  for (const key of keys) {
+    const extracted = extractString(row[key])
+    if (extracted) {
+      return extracted
     }
   }
   return fallback
@@ -654,4 +690,54 @@ export async function deleteModuleVideo(moduleId: string, videoId: string) {
   )
 
   return { ok: true as const }
+}
+
+export async function recordVideoView(moduleId: string, videoId: string, userId: number) {
+  const meta = getModuleMeta(moduleId)
+  if (!meta?.table) {
+    return { ok: false as const, error: "Module not found", status: 404 }
+  }
+
+  const columns = await getTableColumns(meta.table)
+  if (columns.length === 0) {
+    return { ok: false as const, error: `Table "${meta.table}" does not exist or has no columns`, status: 500 }
+  }
+
+  const columnNames = columns.map((column) => column.column_name)
+  const whereClause = buildVideoLookup(columnNames)
+  if (!whereClause) {
+    return { ok: false as const, error: `No unique identifier found in table "${meta.table}"`, status: 500 }
+  }
+
+  await query(
+    `
+    INSERT INTO video_views (user_id, module_id, video_id)
+    VALUES ($1, $2, $3)
+    `,
+    [userId, moduleId, videoId],
+  )
+
+  const totalViewsResult = await query<{ count: string }>(
+    `
+    SELECT COUNT(*)::text AS count
+    FROM video_views
+    WHERE module_id = $1 AND video_id = $2
+    `,
+    [moduleId, videoId],
+  )
+
+  const totalViews = Number(totalViewsResult.rows[0]?.count ?? 0)
+
+  if (columnNames.includes("views")) {
+    await query(
+      `
+      UPDATE ${quoteIdentifier(meta.table)}
+      SET ${quoteIdentifier("views")} = $2
+      WHERE ${whereClause}
+      `,
+      [videoId, totalViews],
+    )
+  }
+
+  return { ok: true as const, counted: true, views: totalViews }
 }

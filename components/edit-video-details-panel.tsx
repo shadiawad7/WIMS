@@ -26,9 +26,11 @@ export function EditVideoDetailsPanel({ moduleId, video, initialRole = null }: E
   const [description, setDescription] = useState(video.description)
   const [videoUrl, setVideoUrl] = useState(video.videoSrc || "")
   const [thumbnail, setThumbnail] = useState(video.thumbnail)
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isAutofilling, setIsAutofilling] = useState(false)
 
   useEffect(() => {
     if (effectiveRole) {
@@ -71,6 +73,26 @@ export function EditVideoDetailsPanel({ moduleId, video, initialRole = null }: E
     try {
       await restoreAdminSession()
 
+      let thumbnailUrl = thumbnail.trim()
+      if (thumbnailFile) {
+        const uploadBody = new FormData()
+        uploadBody.append("file", thumbnailFile)
+
+        const uploadResponse = await fetch("/api/blob/upload", {
+          method: "POST",
+          body: uploadBody,
+        })
+
+        const uploadData = (await uploadResponse.json()) as { error?: string; url?: string }
+        if (!uploadResponse.ok || !uploadData.url) {
+          setError(uploadData.error || "Could not upload thumbnail")
+          return
+        }
+
+        thumbnailUrl = uploadData.url
+        setThumbnail(uploadData.url)
+      }
+
       const response = await fetch(`/api/modules/${moduleId}/videos/${video.id}`, {
         method: "PATCH",
         headers: {
@@ -85,7 +107,7 @@ export function EditVideoDetailsPanel({ moduleId, video, initialRole = null }: E
           beneficialRatio: Number(beneficialRatio),
           description,
           videoUrl,
-          thumbnail,
+          thumbnail: thumbnailUrl,
         }),
       })
 
@@ -101,6 +123,55 @@ export function EditVideoDetailsPanel({ moduleId, video, initialRole = null }: E
       setError("Network error while updating video")
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleAutoFill = async () => {
+    const trimmedUrl = videoUrl.trim()
+    if (!trimmedUrl) {
+      setError("Introduce primero la URL del video para rellenar automaticamente")
+      return
+    }
+
+    setError("")
+    setIsAutofilling(true)
+
+    try {
+      const response = await fetch("/api/video-metadata", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url: trimmedUrl }),
+      })
+
+      const payload = (await response.json()) as {
+        error?: string
+        metadata?: {
+          title?: string
+          coach?: string
+          duration?: string
+          description?: string
+          thumbnail?: string
+          views?: number
+        }
+      }
+
+      if (!response.ok || !payload.metadata) {
+        setError(payload.error || "Could not fetch automatic metadata")
+        return
+      }
+
+      setTitle(payload.metadata.title || "")
+      setCoach(payload.metadata.coach || "")
+      setDuration(payload.metadata.duration || "")
+      setDescription(payload.metadata.description || "")
+      setThumbnail(payload.metadata.thumbnail || "")
+      setViews(String(payload.metadata.views ?? 0))
+    } catch {
+      setError("Network error while fetching metadata")
+    } finally {
+      setIsAutofilling(false)
     }
   }
 
@@ -166,6 +237,20 @@ export function EditVideoDetailsPanel({ moduleId, video, initialRole = null }: E
               <h3 className="text-lg font-semibold uppercase tracking-[0.18em] text-white">Edit Video</h3>
               <p className="mt-2 text-sm text-white/55">
                 Actualiza el título y las métricas de esta ficha o elimina el video del módulo.
+              </p>
+            </div>
+
+            <div className="mb-5 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={handleAutoFill}
+                disabled={isAutofilling}
+                className="rounded-lg border border-white/15 bg-white/6 px-4 py-2 text-sm font-medium text-white/85 disabled:opacity-50"
+              >
+                {isAutofilling ? "Rellenando..." : "Relleno automatico"}
+              </button>
+              <p className="text-xs text-white/45">
+                Extrae titulo, coach, duracion, descripcion y thumbnail desde el video original.
               </p>
             </div>
 
@@ -239,6 +324,16 @@ export function EditVideoDetailsPanel({ moduleId, video, initialRole = null }: E
                   value={thumbnail}
                   onChange={(event) => setThumbnail(event.target.value)}
                   className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm text-white/80">Upload Thumbnail</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => setThumbnailFile(event.target.files?.[0] ?? null)}
+                  className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white file:mr-3 file:rounded-md file:border-0 file:bg-primary/20 file:px-3 file:py-2 file:text-xs"
                 />
               </div>
 

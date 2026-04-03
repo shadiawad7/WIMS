@@ -5,12 +5,28 @@ import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, Flag } from "lucide-react"
 
+declare global {
+  interface Window {
+    Vimeo?: {
+      Player: new (
+        element: HTMLIFrameElement,
+      ) => {
+        on: (event: string, callback: () => void) => void
+        off: (event: string, callback: () => void) => void
+      }
+    }
+  }
+}
+
 interface VideoPlayerProps {
+  moduleId: string
+  videoId: string
   thumbnail: string
   title: string
   videoSrc?: string
   durationSeconds?: number
   onAddHighlight?: (time: number) => void
+  onViewsTracked?: (views: number) => void
 }
 
 const isYouTubeUrl = (url?: string) => Boolean(url && /(youtube\.com|youtu\.be)/i.test(url))
@@ -55,6 +71,7 @@ const getVimeoEmbedUrl = (url: string) => {
     embedUrl.searchParams.set("chapters", "0")
     embedUrl.searchParams.set("transcript", "0")
     embedUrl.searchParams.set("dnt", "1")
+    embedUrl.searchParams.set("autoplay", "0")
 
     return embedUrl.toString()
   } catch {
@@ -62,7 +79,16 @@ const getVimeoEmbedUrl = (url: string) => {
   }
 }
 
-export function VideoPlayer({ thumbnail, title, videoSrc, durationSeconds, onAddHighlight }: VideoPlayerProps) {
+export function VideoPlayer({
+  moduleId,
+  videoId,
+  thumbnail,
+  title,
+  videoSrc,
+  durationSeconds,
+  onAddHighlight,
+  onViewsTracked,
+}: VideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(durationSeconds ?? 22 * 60 + 5)
@@ -70,11 +96,37 @@ export function VideoPlayer({ thumbnail, title, videoSrc, durationSeconds, onAdd
   const [volume, setVolume] = useState(80)
   const progressRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
   const isYouTube = isYouTubeUrl(videoSrc)
   const isVimeo = isVimeoUrl(videoSrc)
   const isEmbeddedVideo = isYouTube || isVimeo
   const youtubeEmbedSrc = videoSrc && isYouTube ? getYouTubeEmbedUrl(videoSrc) : ""
   const vimeoEmbedSrc = videoSrc && isVimeo ? getVimeoEmbedUrl(videoSrc) : ""
+
+  const trackView = async () => {
+    const id = Number(window.localStorage.getItem("playerId"))
+    const name = window.localStorage.getItem("playerName") ?? ""
+    const role = window.localStorage.getItem("playerRole") ?? ""
+
+    try {
+      const response = await fetch(`/api/modules/${moduleId}/videos/${videoId}/view`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          name,
+          role,
+        }),
+      })
+
+      const payload = (await response.json()) as { views?: number }
+      if (response.ok && typeof payload.views === "number") {
+        onViewsTracked?.(payload.views)
+      }
+    } catch {}
+  }
 
   useEffect(() => {
     if (videoSrc) return
@@ -104,6 +156,66 @@ export function VideoPlayer({ thumbnail, title, videoSrc, durationSeconds, onAdd
     if (!element || !videoSrc) return
     element.volume = Math.max(0, Math.min(1, volume / 100))
   }, [volume, videoSrc])
+
+  useEffect(() => {
+    if (!isVimeo || !iframeRef.current) {
+      return
+    }
+
+    let cancelled = false
+    let cleanup: (() => void) | undefined
+
+    const bindVimeoEvents = async () => {
+      if (!window.Vimeo?.Player) {
+        await new Promise<void>((resolve, reject) => {
+          const existing = document.querySelector<HTMLScriptElement>('script[data-vimeo-player-api="true"]')
+          if (existing) {
+            if (window.Vimeo?.Player) {
+              resolve()
+              return
+            }
+            existing.addEventListener("load", () => resolve(), { once: true })
+            existing.addEventListener("error", () => reject(new Error("Vimeo API load failed")), { once: true })
+            return
+          }
+
+          const script = document.createElement("script")
+          script.src = "https://player.vimeo.com/api/player.js"
+          script.async = true
+          script.dataset.vimeoPlayerApi = "true"
+          script.onload = () => resolve()
+          script.onerror = () => reject(new Error("Vimeo API load failed"))
+          document.head.appendChild(script)
+        }).catch(() => undefined)
+      }
+
+      if (cancelled || !window.Vimeo?.Player || !iframeRef.current) {
+        return
+      }
+
+      const player = new window.Vimeo.Player(iframeRef.current)
+      const handlePlay = () => {
+        setIsPlaying(true)
+        void trackView()
+      }
+      const handlePause = () => setIsPlaying(false)
+
+      player.on("play", handlePlay)
+      player.on("pause", handlePause)
+
+      cleanup = () => {
+        player.off("play", handlePlay)
+        player.off("pause", handlePause)
+      }
+    }
+
+    void bindVimeoEvents()
+
+    return () => {
+      cancelled = true
+      cleanup?.()
+    }
+  }, [isVimeo, vimeoEmbedSrc])
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -137,10 +249,11 @@ export function VideoPlayer({ thumbnail, title, videoSrc, durationSeconds, onAdd
       {/* Video thumbnail/content */}
       {isEmbeddedVideo ? (
         <iframe
+          ref={iframeRef}
           src={isYouTube ? youtubeEmbedSrc : vimeoEmbedSrc}
           title={title}
           className="w-full h-full"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
           referrerPolicy="strict-origin-when-cross-origin"
           allowFullScreen
         />
@@ -158,7 +271,10 @@ export function VideoPlayer({ thumbnail, title, videoSrc, durationSeconds, onAdd
             }
           }}
           onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
-          onPlay={() => setIsPlaying(true)}
+          onPlay={() => {
+            setIsPlaying(true)
+            void trackView()
+          }}
           onPause={() => setIsPlaying(false)}
           onEnded={() => setIsPlaying(false)}
         />
@@ -167,7 +283,7 @@ export function VideoPlayer({ thumbnail, title, videoSrc, durationSeconds, onAdd
       )}
 
       {/* Play overlay when paused */}
-      {!isEmbeddedVideo && !isPlaying && (
+      {(!isEmbeddedVideo && !isPlaying) && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/40">
           <button
             onClick={() => {
