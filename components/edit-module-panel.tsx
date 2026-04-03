@@ -50,6 +50,24 @@ export function EditModulePanel({ modules }: EditModulePanelProps) {
     setSuccess("")
 
     try {
+      const id = Number(window.localStorage.getItem("playerId"))
+      const userName = window.localStorage.getItem("playerName") ?? ""
+      const userRole = window.localStorage.getItem("playerRole") ?? ""
+
+      if (Number.isInteger(id) && id > 0 && userName && userRole === "admin") {
+        await fetch("/api/auth/restore", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id,
+            name: userName,
+            role: userRole,
+          }),
+        })
+      }
+
       let thumbnailUrl = thumbnail.trim()
       if (imageFile) {
         const uploadBody = new FormData()
@@ -74,6 +92,9 @@ export function EditModulePanel({ modules }: EditModulePanelProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          id,
+          userName,
+          userRole,
           name,
           director,
           directorVideoUrl,

@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server"
 import { cookies } from "next/headers"
-import { getSessionFromCookies } from "@/lib/auth"
+import { getSessionFromCookies, isValidUserRole } from "@/lib/auth"
+import { query } from "@/lib/db"
 import { getModuleMeta, updateModuleMeta } from "@/lib/module-metadata"
 
 type UpdatePayload = {
+  id?: number
+  userName?: string
+  userRole?: string
   name?: string
   director?: string
   directorVideoUrl?: string
@@ -12,6 +16,20 @@ type UpdatePayload = {
   completion?: number
   locked?: boolean
   unlockTime?: string
+}
+
+type UserRow = {
+  id: number
+  name: string
+  tipo: string | null
+}
+
+function normalizeDbRole(value: string | null) {
+  const role = value?.trim().toLowerCase()
+  if (role === "admin" || role === "player") return role
+  if (role === "administrador") return "admin"
+  if (role === "jugador") return "player"
+  return null
 }
 
 export async function GET(
@@ -32,20 +50,49 @@ export async function PATCH(
   request: Request,
   context: { params: Promise<{ moduleId: string }> },
 ) {
-  const session = getSessionFromCookies(await cookies())
-  if (!session || session.role !== "admin") {
-    return NextResponse.json({ error: "Only administrators can edit modules" }, { status: 403 })
-  }
-
   const { moduleId } = await context.params
 
   try {
+    const body = (await request.json()) as UpdatePayload
+    let session = getSessionFromCookies(await cookies())
+
+    if (!session) {
+      const id = Number(body.id)
+      const userName = body.userName?.trim() ?? ""
+      const userRole = body.userRole?.trim().toLowerCase()
+
+      if (Number.isInteger(id) && id > 0 && userName && isValidUserRole(userRole)) {
+        const { rows } = await query<UserRow>(
+          `
+          SELECT id, name, tipo
+          FROM users
+          WHERE id = $1
+          LIMIT 1
+          `,
+          [id],
+        )
+
+        const user = rows[0]
+        const dbRole = normalizeDbRole(user?.tipo ?? null)
+        if (user && dbRole === userRole && user.name === userName) {
+          session = {
+            id: user.id,
+            name: user.name,
+            role: userRole,
+          }
+        }
+      }
+    }
+
+    if (!session || session.role !== "admin") {
+      return NextResponse.json({ error: "Only administrators can edit modules" }, { status: 403 })
+    }
+
     const current = await getModuleMeta(moduleId)
     if (!current) {
       return NextResponse.json({ error: "Module not found" }, { status: 404 })
     }
 
-    const body = (await request.json()) as UpdatePayload
     const name = body.name?.trim() || current.name
     const director = body.director?.trim() || current.director
     const directorVideoUrl =
