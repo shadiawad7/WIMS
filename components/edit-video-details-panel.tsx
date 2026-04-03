@@ -43,6 +43,20 @@ export function EditVideoDetailsPanel({ moduleId, video, initialRole = null }: E
     }
   }, [effectiveRole])
 
+  const fileToDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          resolve(reader.result)
+          return
+        }
+        reject(new Error("Could not read image file"))
+      }
+      reader.onerror = () => reject(new Error("Could not read image file"))
+      reader.readAsDataURL(file)
+    })
+
   const restoreAdminSession = async () => {
     const id = Number(window.localStorage.getItem("playerId"))
     const name = window.localStorage.getItem("playerName") ?? ""
@@ -85,12 +99,11 @@ export function EditVideoDetailsPanel({ moduleId, video, initialRole = null }: E
 
         const uploadData = (await uploadResponse.json()) as { error?: string; url?: string }
         if (!uploadResponse.ok || !uploadData.url) {
-          setError(uploadData.error || "Could not upload thumbnail")
-          return
+          thumbnailUrl = await fileToDataUrl(thumbnailFile)
+        } else {
+          thumbnailUrl = uploadData.url
         }
-
-        thumbnailUrl = uploadData.url
-        setThumbnail(uploadData.url)
+        setThumbnail(thumbnailUrl)
       }
 
       const response = await fetch(`/api/modules/${moduleId}/videos/${video.id}`, {
@@ -221,7 +234,7 @@ export function EditVideoDetailsPanel({ moduleId, video, initialRole = null }: E
           onClick={() => setIsOpen(false)}
         >
           <div
-            className="liquid-glass-panel relative w-full max-w-3xl rounded-[28px] p-5 md:p-6"
+            className="liquid-glass-panel relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[28px] p-4 md:p-6"
             onClick={(event) => event.stopPropagation()}
           >
             <button
@@ -254,7 +267,7 @@ export function EditVideoDetailsPanel({ moduleId, video, initialRole = null }: E
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3 md:gap-4 md:grid-cols-2">
               <div className="space-y-2 md:col-span-2">
                 <label className="text-sm text-white/80">Title</label>
                 <input

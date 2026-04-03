@@ -41,6 +41,20 @@ export function EditModulePanel({ modules }: EditModulePanelProps) {
     setSuccess("")
   }, [selectedModule])
 
+  const fileToDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          resolve(reader.result)
+          return
+        }
+        reject(new Error("Could not read image file"))
+      }
+      reader.onerror = () => reject(new Error("Could not read image file"))
+      reader.readAsDataURL(file)
+    })
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!selectedModule) return
@@ -79,11 +93,11 @@ export function EditModulePanel({ modules }: EditModulePanelProps) {
         })
         const uploadData = (await uploadResponse.json()) as { error?: string; url?: string }
         if (!uploadResponse.ok || !uploadData.url) {
-          setError(uploadData.error || "Could not upload module image")
-          return
+          thumbnailUrl = await fileToDataUrl(imageFile)
+        } else {
+          thumbnailUrl = uploadData.url
         }
-        thumbnailUrl = uploadData.url
-        setThumbnail(uploadData.url)
+        setThumbnail(thumbnailUrl)
       }
 
       const response = await fetch(`/api/modules/${selectedModule.id}`, {
@@ -126,7 +140,7 @@ export function EditModulePanel({ modules }: EditModulePanelProps) {
   }
 
   return (
-    <div className="liquid-glass-panel rounded-[28px] p-5 mb-6">
+    <div className="liquid-glass-panel rounded-[28px] p-4 md:p-5 mb-6 overflow-hidden">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
         <div>
           <h3 className="text-lg font-bold text-white uppercase tracking-wider">Edit Modules</h3>
@@ -145,7 +159,7 @@ export function EditModulePanel({ modules }: EditModulePanelProps) {
         </select>
       </div>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
         <div className="space-y-2">
           <label className="text-sm text-white/80">Title</label>
           <input
